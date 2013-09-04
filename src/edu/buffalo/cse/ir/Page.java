@@ -1,3 +1,8 @@
+/* 
+ * Team Name: Infinite Loop
+ * Project: UB_IR
+ * File name: Page.java
+ */
 package edu.buffalo.cse.ir;
 
 public class Page {

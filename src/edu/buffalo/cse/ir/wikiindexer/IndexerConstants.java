@@ -1,5 +1,7 @@
-/**
- * 
+/* 
+ * Team Name: Infinite Loop
+ * Project: UB_IR
+ * File name: IndexerConstants.java
  */
 package edu.buffalo.cse.ir.wikiindexer;
 
