@@ -1,19 +1,20 @@
-/* 
- * Team Name: Infinite Loop
- * Project: UB_IR
- * File name: Runner.java
+/**
+ * 
  */
 package edu.buffalo.cse.ir.wikiindexer;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.junit.runner.Computer;
+import org.junit.runner.JUnitCore;
+
 import edu.buffalo.cse.ir.wikiindexer.IndexerConstants.RequiredConstant;
 import edu.buffalo.cse.ir.wikiindexer.parsers.Parser;
+import edu.buffalo.cse.ir.wikiindexer.test.AllTests;
 import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
 
 /**
@@ -32,7 +33,8 @@ public class Runner {
 			System.exit(1);
 		} else {
 			if (args[0] != null && args[0].length() > 0) {
-				Properties properties = loadProperties(args[0]);
+				String filename = args[0];
+				Properties properties = loadProperties(filename);
 				if (properties == null) {
 					System.err.println("Error while loading the Properties file. Please check the messages above and try again");
 					System.exit(2);
@@ -41,11 +43,11 @@ public class Runner {
 						String mode = args[1].substring(1).toLowerCase();
 						
 						if ("t".equals(mode)) {
-							runTests(properties);
+							runTests(filename);
 						} else if ("i".equals(mode)) {
 							runIndexer(properties);
 						} else if ("b".equals(mode)) {
-							runTests(properties);
+							runTests(filename);
 							runIndexer(properties);
 						} else {
 							System.err.println("Invalid mode specified!");
@@ -77,6 +79,10 @@ public class Runner {
 		
 	}
 	
+	/**
+	 * Method to run the full indexer
+	 * @param properties: The properties file to run with
+	 */
 	private static void runIndexer(Properties properties) {
 		Parser parser = new Parser(properties);
 		ConcurrentLinkedQueue<WikipediaDocument> queue = new ConcurrentLinkedQueue<WikipediaDocument>();
@@ -85,10 +91,14 @@ public class Runner {
 		
 	}
 
-	
-
-	private static void runTests(Properties properties) {
-		// TODO Auto-generated method stub
+	/**
+	 * Method to execute all tests
+	 * @param filename: Filename for the properties file
+	 */
+	private static void runTests(String filename) {
+		System.setProperty("PROPSFILENAME", filename);
+		JUnitCore core = new JUnitCore();
+		core.run(new Computer(), AllTests.class);
 		
 	}
 	
@@ -98,12 +108,9 @@ public class Runner {
 	 * @return The loaded object
 	 */
 	private static Properties loadProperties(String filename) {
-		Properties props = new Properties();
-		FileInputStream inStream = null;
+
 		try {
-			inStream = new FileInputStream(filename);
-			props.load(inStream);
-			inStream.close();
+			Properties props = FileUtil.loadProperties(filename);
 			
 			if (validateProps(props)) {
 				return props;

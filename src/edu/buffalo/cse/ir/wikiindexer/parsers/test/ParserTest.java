@@ -1,7 +1,5 @@
-/* 
- * Team Name: Infinite Loop
- * Project: UB_IR
- * File name: ParserTest.java
+/**
+ * 
  */
 package edu.buffalo.cse.ir.wikiindexer.parsers.test;
 
@@ -10,27 +8,27 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
+import edu.buffalo.cse.ir.wikiindexer.FileUtil;
 import edu.buffalo.cse.ir.wikiindexer.parsers.Parser;
+import edu.buffalo.cse.ir.wikiindexer.test.PropertiesBasedTest;
 import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
 
 /**
  * @author nikhillo
  *
  */
-public class ParserTest {
-	private static Properties idxProps;
+@RunWith(Parameterized.class)
+public class ParserTest extends PropertiesBasedTest {
 	
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass(Properties props) throws Exception {
-		idxProps = props;
+	public ParserTest(Properties props) {
+		super(props);
 	}
-
+	
+	
 	/**
 	 * Test method for {@link edu.buffalo.cse.ir.wikiindexer.parsers.Parser#parse(java.lang.String, java.util.Collection)}.
 	 */
@@ -50,6 +48,13 @@ public class ParserTest {
 		//invalid filename
 		testClass.parse("abc.xml", list);
 		assertTrue(list.isEmpty());
+		
+		//five documents
+		testClass.parse(FileUtil.getRootFilesFolder(idxProps) + "five_entries.xml", list);
+		assertEquals(5, list.size());
+		/* TODO: Add structural test here */
+		
+		
 	}
 
 }
