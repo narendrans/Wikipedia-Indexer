@@ -1,3 +1,8 @@
+/* 
+ * Team Name: Infinite Loop
+ * Project: UB_IR
+ * File name: WikipediaSuite.java
+ */
 package edu.buffalo.cse.ir.wikiindexer.wikipedia.test;
 
 import org.junit.runner.RunWith;

@@ -5,14 +5,17 @@
  */
 package edu.buffalo.cse.ir;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
+
 public class MarkupParser {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ParseException {
 		List<String> category = new ArrayList<String>();
 		Pattern REGEX_PATTERN = Pattern.compile("(?<=\\[\\[Category:)[^]]+");
 		Matcher matcher = REGEX_PATTERN.matcher(text);
@@ -23,6 +26,8 @@ public class MarkupParser {
 
 		// Prints the number of elements in category list
 		System.out.println(category.size());
+
+		WikipediaDocument doc = new WikipediaDocument(0, null, null, null);
 
 	}
 
