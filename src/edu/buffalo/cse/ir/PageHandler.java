@@ -20,6 +20,7 @@ import org.xml.sax.helpers.DefaultHandler;
 // testing
 // added by tsasaa
 // added by Naren
+// another comment
 public class PageHandler extends DefaultHandler {
 	boolean currentElement = false;
 	private ArrayList<Page> listOfPages;
