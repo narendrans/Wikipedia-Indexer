@@ -24,6 +24,7 @@ public class MarkupParser {
 			category.add(matcher.group());
 		}
 
+		// testing a change to class
 		// Prints the number of elements in category list
 		System.out.println(category.size());
 
