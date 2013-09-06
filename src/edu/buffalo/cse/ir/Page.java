@@ -12,6 +12,8 @@ public class Page {
 	private String timeStamp;
 	private String userName;
 	private String text;
+	
+	// Modified page
 
 	public String getText() {
 		return text;
