@@ -16,11 +16,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-// testing
-// testing
-// added by tsasaa
-// added by Naren
-// another comment
+
 public class PageHandler extends DefaultHandler {
 	boolean currentElement = false;
 	private ArrayList<Page> listOfPages;
@@ -60,7 +56,7 @@ public class PageHandler extends DefaultHandler {
 			System.out.println("Page Comment: " + pages.getText());
 			System.out.println("------END OF PAGE-----");
 		}
-		//System.out.println(listOfPages.get(0).getTitle());
+		// System.out.println(listOfPages.get(0).getTitle());
 	}
 
 	public void startElement(String s, String s1, String elementName,
@@ -121,19 +117,19 @@ public class PageHandler extends DefaultHandler {
 				tempString = "";
 
 		}
-		if(tempString.length()>1000)
-		tempString += new String(c, i, j);
+		if (tempString.length() > 1000)
+			tempString += new String(c, i, j);
 		currentElement = false;
 	}
 
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
-		new PageHandler("/Users/naren/Documents/ir/WikiDump_1600.xml"); 
+		new PageHandler("/Users/naren/Documents/ir/WikiDump_1600.xml");
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
 		System.out.println(totalTime);
-		//Collaborative_Editing.xml ~50 ms
-		//WikiDump_1600.xml ~800
+		// Collaborative_Editing.xml ~50 ms
+		// WikiDump_1600.xml ~800
 	}
 
 	public void startDocument() {
