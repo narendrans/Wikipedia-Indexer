@@ -19,6 +19,7 @@ import org.xml.sax.helpers.DefaultHandler;
 // testing
 // testing
 // added by tsasaa
+// added by Naren
 public class PageHandler extends DefaultHandler {
 	boolean currentElement = false;
 	private ArrayList<Page> listOfPages;
