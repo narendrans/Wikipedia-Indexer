@@ -22,7 +22,7 @@ public class PageHandler extends DefaultHandler {
 	private ArrayList<Page> listOfPages;
 	private Page page;
 	private String inputXmlFileName;
-	private String tempString = null;
+	private StringBuffer sb;
 	private final Stack<String> tagsStack = new Stack<String>();
 
 	public PageHandler(String inputXmlFileName) {
@@ -71,13 +71,11 @@ public class PageHandler extends DefaultHandler {
 		if (elementName.equalsIgnoreCase("contributor")) {
 			page.setUserName(attributes.getValue("username"));
 		}
+		sb.setLength(0);
 	}
 
 	@Override
 	public void endElement(String s, String s1, String element) {
-		currentElement = false;
-		String tString = tempString;
-		tempString = "";
 
 		String tag = peekTag();
 		if (!element.equals(tag)) {
@@ -88,38 +86,36 @@ public class PageHandler extends DefaultHandler {
 
 		if ("page".equalsIgnoreCase(parentTag)) {
 			if (element.equalsIgnoreCase("id")) {
-				page.setId(tString);
+				page.setId(sb.toString());
 			}
 		}
 		if (element.equals("page")) {
 			listOfPages.add(page);
 		}
 		if (element.equalsIgnoreCase("title")) {
-			page.setTitle(tString);
+			page.setTitle(sb.toString());
 		}
-		if (element.equalsIgnoreCase("comment")) {
-			page.setText(tString);
+		if (element.equalsIgnoreCase("comment")) { //TODO: Replace with text
+			page.setText(sb.toString());
 		}
 		if (element.equalsIgnoreCase("username")) {
-			page.setUserName(tString);
+			page.setUserName(sb.toString());
 		}
 		if (element.equalsIgnoreCase("timestamp")) {
-			page.setTimeStamp(tString);
+			page.setTimeStamp(sb.toString());
 		}
-		currentElement = false;
+		sb.setLength(0);
 	}
 
 	@Override
 	public void characters(char[] c, int i, int j) throws SAXException {
-		if (currentElement) {
-			tempString = new String(c, i, j);
-			if (tempString == null)
-				tempString = "";
-
+		try {
+			super.characters(c, i, j);
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		if (tempString.length() > 1000)
-			tempString += new String(c, i, j);
-		currentElement = false;
+		sb.append(c, i, j);
 	}
 
 	public static void main(String[] args) {
@@ -132,7 +128,10 @@ public class PageHandler extends DefaultHandler {
 		// WikiDump_1600.xml ~800
 	}
 
-	public void startDocument() {
+	public void startDocument() throws SAXException {
+		super.startDocument();
+
+		sb = new StringBuffer();
 		pushTag("");
 	}
 
@@ -146,6 +145,12 @@ public class PageHandler extends DefaultHandler {
 
 	private String peekTag() {
 		return tagsStack.peek();
+	}
+
+	@Override
+	public void endDocument() throws SAXException {
+		// TODO Auto-generated method stub
+		super.endDocument();
 	}
 
 }
