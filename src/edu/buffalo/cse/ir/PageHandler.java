@@ -95,10 +95,11 @@ public class PageHandler extends DefaultHandler {
 		if (element.equalsIgnoreCase("title")) {
 			page.setTitle(sb.toString());
 		}
-		if (element.equalsIgnoreCase("comment")) { //TODO: Replace with text
+		if (element.equalsIgnoreCase("comment")) { // TODO: Replace with text
 			page.setText(sb.toString());
 		}
-		if (element.equalsIgnoreCase("username")) {
+		if (element.equalsIgnoreCase("username")
+				|| element.equalsIgnoreCase("ip")) {
 			page.setUserName(sb.toString());
 		}
 		if (element.equalsIgnoreCase("timestamp")) {
