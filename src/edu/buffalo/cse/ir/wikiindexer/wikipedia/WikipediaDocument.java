@@ -1,7 +1,5 @@
-/* 
- * Team Name: Infinite Loop
- * Project: UB_IR
- * File name: WikipediaDocument.java
+/**
+ * 
  */
 package edu.buffalo.cse.ir.wikiindexer.wikipedia;
 

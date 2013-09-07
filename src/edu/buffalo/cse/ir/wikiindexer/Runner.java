@@ -1,13 +1,13 @@
-/* 
- * Team Name: Infinite Loop
- * Project: UB_IR
- * File name: Runner.java
+/**
+ * 
  */
 package edu.buffalo.cse.ir.wikiindexer;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -15,8 +15,12 @@ import org.junit.runner.Computer;
 import org.junit.runner.JUnitCore;
 
 import edu.buffalo.cse.ir.wikiindexer.IndexerConstants.RequiredConstant;
+import edu.buffalo.cse.ir.wikiindexer.indexer.INDEXFIELD;
 import edu.buffalo.cse.ir.wikiindexer.parsers.Parser;
 import edu.buffalo.cse.ir.wikiindexer.test.AllTests;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.Tokenizer;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerFactory;
+import edu.buffalo.cse.ir.wikiindexer.wikipedia.DocumentTransformer;
 import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
 
 /**
@@ -89,6 +93,17 @@ public class Runner {
 		Parser parser = new Parser(properties);
 		ConcurrentLinkedQueue<WikipediaDocument> queue = new ConcurrentLinkedQueue<WikipediaDocument>();
 		parser.parse(FileUtil.getDumpFileName(properties), queue);
+		
+		//initialize tokenizers
+		Map<INDEXFIELD, Tokenizer> ifmap = new HashMap<INDEXFIELD, Tokenizer>();
+		TokenizerFactory tfact = TokenizerFactory.getInstance(properties);
+		for (INDEXFIELD idxf : INDEXFIELD.values()) {
+			ifmap.put(idxf, tfact.getTokenizer(idxf));
+		}
+		
+		
+		
+		
 		//TODO: More code to be added here!
 		
 	}
