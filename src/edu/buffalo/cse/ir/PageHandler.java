@@ -6,7 +6,10 @@
 package edu.buffalo.cse.ir;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Stack;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -17,6 +20,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
+
 public class PageHandler extends DefaultHandler {
 	boolean currentElement = false;
 	private ArrayList<Page> listOfPages;
@@ -24,13 +29,6 @@ public class PageHandler extends DefaultHandler {
 	private String inputXmlFileName;
 	private StringBuffer sb;
 	private final Stack<String> tagsStack = new Stack<String>();
-
-	public PageHandler(String inputXmlFileName) {
-		this.inputXmlFileName = inputXmlFileName;
-		listOfPages = new ArrayList<Page>();
-		parseDocument();
-		printDatas();
-	}
 
 	private void parseDocument() {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -46,15 +44,35 @@ public class PageHandler extends DefaultHandler {
 		}
 	}
 
-	private void printDatas() {
-		for (Page pages : listOfPages) {
-			System.out.println("------START OF PAGE-----");
-			System.out.println("Page ID: " + pages.getId());
-			System.out.println("Page Title: " + pages.getTitle());
-			System.out.println("Page Time Stamp: " + pages.getTimeStamp());
-			System.out.println("Page Author: " + pages.getUserName());
-			System.out.println("Page Comment: " + pages.getText());
-			System.out.println("------END OF PAGE-----");
+	public ArrayList<WikipediaDocument> fetchDocuments(String inputXmlFileName)
+			throws ParseException {
+		this.inputXmlFileName = inputXmlFileName;
+		listOfPages = new ArrayList<Page>();
+		ArrayList<WikipediaDocument> docs = new ArrayList<WikipediaDocument>();
+
+		if (inputXmlFileName == null || inputXmlFileName.equalsIgnoreCase("")) {
+			docs.clear();
+			return docs;
+		} else {
+
+			parseDocument();
+			for (Page pages : listOfPages) {
+				/*
+				 * System.out.println("------START OF PAGE-----");
+				 * System.out.println("Page ID: " + pages.getId());
+				 * System.out.println("Page Title: " + pages.getTitle());
+				 * System.out.println("Page Time Stamp: " +
+				 * pages.getTimeStamp()); System.out.println("Page Author: " +
+				 * pages.getUserName()); System.out.println("Page Comment: " +
+				 * pages.getText());
+				 * System.out.println("------END OF PAGE-----");
+				 */
+				WikipediaDocument doc = new WikipediaDocument(
+						Integer.parseInt(pages.getId()), pages.getTimeStamp(),
+						pages.getUserName(), pages.getTitle());
+				docs.add(doc);
+			}
+			return docs;
 		}
 		// System.out.println(listOfPages.get(0).getTitle());
 	}
@@ -119,9 +137,9 @@ public class PageHandler extends DefaultHandler {
 		sb.append(c, i, j);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ParseException {
 		long startTime = System.currentTimeMillis();
-		new PageHandler("/Users/naren/Documents/ir/WikiDump_1600.xml");
+		//new PageHandler("/Users/naren/Documents/ir/WikiDump_1600.xml");
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
 		System.out.println(totalTime);
