@@ -28,10 +28,20 @@ public class WikipediaParser {
 			return null;
 		else if (titleStr.isEmpty())
 			return "";
-		Pattern regex = Pattern.compile("=+ (.+?) =+");
-		Matcher matcher = regex.matcher(titleStr);
-		matcher.find();
-		return matcher.group(1);
+
+		// =+ - one or more "="
+		// .+ "." is any character -> one or more character
+		// (.+) represents the string "text" inside "== text =="
+
+		if (titleStr.contains(" ")) {
+			Pattern regex = Pattern.compile("=+ (.+) =+");
+			Matcher matcher = regex.matcher(titleStr);
+			matcher.find();
+			return matcher.group(1);
+		} else {
+			return titleStr.replaceAll("=", "");
+		}
+
 	}
 
 	/* TODO */
@@ -95,12 +105,6 @@ public class WikipediaParser {
 
 		if (text.endsWith(" "))
 			text = text.substring(0, text.length() - 1);
-
-		/*
-		 * if(text.contains("  ")) text = text.replace("  ", " ");
-		 * if(text.startsWith(" ")) text = text.replaceFirst(" ", "");
-		 * if(text.endsWith(" ")) text = text.re
-		 */
 		return text;
 
 	}
@@ -139,8 +143,9 @@ public class WikipediaParser {
 			return null;
 		else if (text.isEmpty())
 			return parsedLink;
-		// (?:\\*+|#+|:+) (.+)
 
+		if (text.contains("\\u0020\\("))
+			;
 		Pattern regex = Pattern.compile("\\[\\[(.+?),\\u0020(.+?)\\|\\]\\]");
 		Matcher matcher = regex.matcher(text);
 		matcher.find();

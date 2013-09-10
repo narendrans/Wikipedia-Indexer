@@ -16,23 +16,13 @@ import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
 public class MarkupParser {
 
 	public static void main(String[] args) throws ParseException {
-		List<String> category = new ArrayList<String>();
-		Pattern REGEX_PATTERN = Pattern.compile("(?<=\\[\\[Category:)[^]]+");
-		Matcher matcher = REGEX_PATTERN.matcher(text);
-		while (matcher.find()) {
-			// find the category and add it to the list
-			category.add(matcher.group());
-		}
-
-		// testing a change to class
-		// Prints the number of elements in category list
-		System.out.println(category.size());
-
-		WikipediaDocument doc = new WikipediaDocument(0, null, null, null);
+		System.out.println("<random> I should not vanish </random>".replaceAll("\\u0020*<[^>]*>\\u0020*", ""));
+		System.out.println("&lt;painful attr1='yes' attr2='no' &gt;Did you get me right?&lt;/pain&gt;".replaceAll("&lt;([^.]*?)&gt;", "$1"));
+		System.out.println("watch  disappear".replaceAll("  ", " "));
 
 	}
 
-	private final static String text = "{{redirects here|Person (law)|other uses|Legal personality|other uses|Corporate personhood}}\n"
+	private final static String texts = "{{redirects here|Person (law)|other uses|Legal personality|other uses|Corporate personhood}}\n"
 			+ "{{pp-move-indef}}\n"
 			+ "[[File:Persons.svg|190 px|thumb|Two silhouetted people]]\n"
 			+ "\n"

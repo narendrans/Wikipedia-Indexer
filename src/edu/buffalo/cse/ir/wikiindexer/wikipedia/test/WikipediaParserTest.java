@@ -47,6 +47,10 @@ public class WikipediaParserTest {
 		// level 5 test
 		assertEquals("section",
 				WikipediaParser.parseSectionTitle("====== section ======"));
+	
+		assertEquals("section",
+				WikipediaParser.parseSectionTitle("======section======"));
+
 	}
 
 	/**
