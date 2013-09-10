@@ -24,9 +24,9 @@ public class WikipediaParser {
 	 * @return The parsed string with the markup removed
 	 */
 	public static String parseSectionTitle(String titleStr) {
-		if(titleStr==null)
+		if (titleStr == null)
 			return null;
-		else if(titleStr.isEmpty())
+		else if (titleStr.isEmpty())
 			return "";
 		Pattern regex = Pattern.compile("=+ (.+?) =+");
 		Matcher matcher = regex.matcher(titleStr);
@@ -44,7 +44,7 @@ public class WikipediaParser {
 	 * @return The parsed string with markup removed
 	 */
 	public static String parseListItem(String itemText) {
-		if(itemText==null)
+		if (itemText == null)
 			return null;
 		else if (itemText.isEmpty())
 			return "";
@@ -64,12 +64,12 @@ public class WikipediaParser {
 	 * @return The parsed text with the markup removed
 	 */
 	public static String parseTextFormatting(String text) {
-		if(text==null)
+		if (text == null)
 			return null;
-		else if(text.isEmpty())
+		else if (text.isEmpty())
 			return "";
 		return text.replaceAll("'+", "");
-		
+
 	}
 
 	/* TODO */
@@ -82,14 +82,27 @@ public class WikipediaParser {
 	 * @return The parsed text with the markup removed.
 	 */
 	public static String parseTagFormatting(String text) {
-		if(text==null)
+		if (text == null)
 			return null;
-		else if(text.isEmpty())
+		else if (text.isEmpty())
 			return "";
 		text = text.replaceAll("<[^>]*>", "");
-		//text = text.replaceAll("<[^>]*>", "");
+		text = text.replaceAll("&lt;([^.]*?)&gt;", "");
+		text = text.replace("  ", " ");
+
+		if (text.startsWith(" "))
+			text = text.replaceFirst(" ", "");
+
+		if (text.endsWith(" "))
+			text = text.substring(0, text.length() - 1);
+
+		/*
+		 * if(text.contains("  ")) text = text.replace("  ", " ");
+		 * if(text.startsWith(" ")) text = text.replaceFirst(" ", "");
+		 * if(text.endsWith(" ")) text = text.re
+		 */
 		return text;
-		
+
 	}
 
 	/* TODO */
@@ -102,7 +115,11 @@ public class WikipediaParser {
 	 * @return The parsed text with the markup removed
 	 */
 	public static String parseTemplates(String text) {
-		return null;
+		if (text == null)
+			return null;
+		else if (text.isEmpty())
+			return "";
+		return text.replaceAll("\\{\\{(.+?)\\}\\}", "");
 	}
 
 	/* TODO */
@@ -117,7 +134,21 @@ public class WikipediaParser {
 	 *         element is the link url
 	 */
 	public static String[] parseLinks(String text) {
-		return null;
+		String[] parsedLink = new String[2];
+		if (text == null)
+			return null;
+		else if (text.isEmpty())
+			return parsedLink;
+		// (?:\\*+|#+|:+) (.+)
+
+		Pattern regex = Pattern.compile("\\[\\[(.+?),\\u0020(.+?)\\|\\]\\]");
+		Matcher matcher = regex.matcher(text);
+		matcher.find();
+		parsedLink[0] = matcher.group(1);
+		StringBuilder str = new StringBuilder(parsedLink[0]);
+		str.insert(0, "http://en.wikipedia.org/wiki/");
+		parsedLink[1] = str.toString();
+		return parsedLink;
 	}
 
 }
