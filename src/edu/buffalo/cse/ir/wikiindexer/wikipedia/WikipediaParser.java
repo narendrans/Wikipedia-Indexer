@@ -144,16 +144,40 @@ public class WikipediaParser {
 		else if (text.isEmpty())
 			return parsedLink;
 
-		if (text.contains("\\u0020\\("))
-			;
-		Pattern regex = Pattern.compile("\\[\\[(.+?),\\u0020(.+?)\\|\\]\\]");
-		Matcher matcher = regex.matcher(text);
-		matcher.find();
-		parsedLink[0] = matcher.group(1);
-		StringBuilder str = new StringBuilder(parsedLink[0]);
-		str.insert(0, "http://en.wikipedia.org/wiki/");
-		parsedLink[1] = str.toString();
-		return parsedLink;
-	}
+		if (text.contains("(")) {
+			text = text.replaceAll(" \\(.+\\)\\|", "");
+			Pattern regex = Pattern.compile("\\[\\[(.+?)\\]\\]");
+			Matcher matcher = regex.matcher(text);
+			matcher.find();
+			parsedLink[0] = matcher.group(1);
+			StringBuilder str = new StringBuilder(parsedLink[0]);
+			str.insert(0, "http://en.wikipedia.org/wiki/");
+			parsedLink[1] = str.toString();
+			return parsedLink;
 
+		} else if (text.contains("Wikipedia")) {
+			text = text.replaceAll(" ", "_");
+			Pattern regex = Pattern.compile("\\[\\[(.+?)\\|\\]\\]");
+			Matcher matcher = regex.matcher(text);
+			matcher.find();
+			parsedLink[0] = matcher.group(1);
+			StringBuilder str = new StringBuilder(parsedLink[0]);
+			str.insert(0, "http://en.wikipedia.org/wiki/");
+			parsedLink[1] = str.toString();
+			return parsedLink;
+		}
+
+		else {
+			Pattern regex = Pattern
+					.compile("\\[\\[(.+?),\\u0020(.+?)\\|\\]\\]");
+			Matcher matcher = regex.matcher(text);
+			matcher.find();
+			parsedLink[0] = matcher.group(1);
+			StringBuilder str = new StringBuilder(parsedLink[0]);
+			str.insert(0, "http://en.wikipedia.org/wiki/");
+			parsedLink[1] = str.toString();
+			return parsedLink;
+		}
+
+	}
 }

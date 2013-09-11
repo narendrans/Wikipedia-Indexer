@@ -47,7 +47,7 @@ public class WikipediaParserTest {
 		// level 5 test
 		assertEquals("section",
 				WikipediaParser.parseSectionTitle("====== section ======"));
-	
+
 		assertEquals("section",
 				WikipediaParser.parseSectionTitle("======section======"));
 
@@ -193,9 +193,30 @@ public class WikipediaParserTest {
 	 */
 	@Test
 	public final void testParseLinks() {
-		String[] link = { "Seattle", "http://en.wikipedia.org/wiki/Seattle" };
+
+		// Testing cases as mentioned in the examples given in the below link
+		// http://en.wikipedia.org/wiki/Help:Wiki_markup#Links_and_URLs
+		String linkText = "[[Seattle, Washington|]]";
+
+		String[] link = WikipediaParser.parseLinks(linkText);
 		assertEquals("Seattle", link[0]);
 		assertEquals("http://en.wikipedia.org/wiki/Seattle", link[1]);
+
+		
+		// TODO: Should check out the actual formating 
+		linkText = "[[kingdom (biology)|]]";
+
+		link = WikipediaParser.parseLinks(linkText);
+
+		assertEquals("kingdom", link[0]);
+		assertEquals("http://en.wikipedia.org/wiki/kingdom", link[1]);
+
+		linkText = "[[Wikipedia:Village pump|]]";
+		link = WikipediaParser.parseLinks(linkText);
+
+		assertEquals("Wikipedia:Village_pump", link[0]);
+		assertEquals("http://en.wikipedia.org/wiki/Wikipedia:Village_pump", link[1]);
+
 	}
 
 }
