@@ -49,6 +49,7 @@ public class Parser {
 				Collection<WikipediaDocument> docsFromXml = pageHandler
 						.fetchDocuments(filename);
 				docs = docsFromXml;
+				System.out.println(docs.size());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

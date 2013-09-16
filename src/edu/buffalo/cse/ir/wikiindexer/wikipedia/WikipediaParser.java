@@ -23,6 +23,8 @@ public class WikipediaParser {
 	 *            : The string to be parsed
 	 * @return The parsed string with the markup removed
 	 */
+	// TODO: First check if it is a section title, tag or whatever and then
+	// proceed to parsing, the same text will be passed to all methods
 	public static String parseSectionTitle(String titleStr) {
 		if (titleStr == null)
 			return null;
