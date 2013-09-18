@@ -37,6 +37,7 @@ public class EnglishStemmer implements TokenizerRule {
 						
 						s.stem();
 						stream.set(s.toString());
+						System.out.println(s.toString());
 					}
 				}
 				

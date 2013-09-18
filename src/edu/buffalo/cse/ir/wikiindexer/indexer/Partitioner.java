@@ -18,8 +18,7 @@ public class Partitioner {
 	 * @return: Total number of partitions
 	 */
 	public static int getNumPartitions() {
-		//TODO: Implement this method
-		return -1;
+		return 4;
 	}
 	
 	/**

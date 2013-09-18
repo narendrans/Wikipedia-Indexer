@@ -232,7 +232,7 @@ public class Runner {
 				return props;
 			} else {
 				System.err.println("Some properties were either not loaded or recognized. Please refer to the manual for more details");
-				return null;
+				return props;
 			}
 		} catch (FileNotFoundException e) {
 			System.err.println("Unable to open or load the specified file: " + filename);

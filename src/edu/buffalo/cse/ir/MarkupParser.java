@@ -7,101 +7,164 @@ package edu.buffalo.cse.ir;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
 
 public class MarkupParser {
 
 	public static void main(String[] args) throws ParseException {
-		System.out.println("<random> I should not vanish </random>".replaceAll("\\u0020*<[^>]*>\\u0020*", ""));
-		System.out.println("&lt;painful attr1='yes' attr2='no' &gt;Did you get me right?&lt;/pain&gt;".replaceAll("&lt;([^.]*?)&gt;", "$1"));
-		System.out.println("watch  disappear".replaceAll("  ", " "));
+	//	System.out.println("<random> I should not vanish </random>".replaceAll(
+	//			"\\u0020*<[^>]*>\\u0020*", ""));
+	//	System.out
+	//			.println("&lt;painful attr1='yes' attr2='no' &gt;Did you get me right?&lt;/pain&gt;"
+	//					.replaceAll("&lt;([^.]*?)&gt;", "$1"));
+	//	System.out.println("watch  disappear".replaceAll("  ", " "));
+	//	System.out.println(getCategories(texts));
+System.out.println(UUID.randomUUID().toString());
 
 	}
 
-	private final static String texts = "{{redirects here|Person (law)|other uses|Legal personality|other uses|Corporate personhood}}\n"
-			+ "{{pp-move-indef}}\n"
-			+ "[[File:Persons.svg|190 px|thumb|Two silhouetted people]]\n"
+	public static Collection<String> getCategories(String input) {
+		Collection<String> categories = new ArrayList<String>();
+
+		if (input.contains("Category")) {
+			Pattern pattern = Pattern.compile("\\[\\[Category:(.+)\\]\\]");
+
+			Matcher matcher = pattern.matcher(input);
+			while (matcher.find()) {
+				System.out.println(matcher.group(1));
+				categories.add(matcher.group(1));
+			}
+		}
+		return categories;
+	}
+
+	private final static String texts = "{{Use dmy dates|date=November 2012}}\n"
+			+ "{{Infobox musical artist &lt;!-- See Wikipedia:WikiProject_Musicians --&gt;\n"
+			+ "| name                = Russ Conway\n"
+			+ "| image                 =\n"
+			+ "| caption            = Russ Conway, pictured on the front of his 1959 [[Extended play|EP]] ''More Party Pops''.\n"
+			+ "| image_size            = \n"
+			+ "| background          = non_vocal_instrumentalist\n"
+			+ "| birth_name          = Trevor Herbert Stanford\n"
+			+ "| alias               = \n"
+			+ "| birth_date          = {{birth date|1925|09|2|df=y}}\n"
+			+ "| birth_place         = [[Bristol]], [[England]], UK\n"
+			+ "| death_date          = {{death date and age|2000|11|16|1925|09|02|df=y}}\n"
+			+ "| death_place         = [[Eastbourne]], [[Sussex]], England, UK\n"
+			+ "| origin              = \n"
+			+ "| instrument          = [[Piano]]\n"
+			+ "| genre               = \n"
+			+ "| occupation          = [[Musician]]\n"
+			+ "| years_active        = \n"
+			+ "| label               =  EMI (Columbia), Pye, MusicMedia, Churchill\n"
+			+ "| associated_acts     = \n"
+			+ "| website                 = \n"
+			+ "| notable_instruments = \n"
+			+ "}}\n"
 			+ "\n"
-			+ "A '''person''' is a being, such as a [[human]], that has certain capacities or attributes constituting [[personhood]], which in turn is defined differently by different authors in different disciplines, and by different cultures in different times and places. In ancient Rome, the word &quot;[[persona]]&quot; (Latin) or &quot;[[prosopon]]&quot; (πρόσωπον: Greek) originally referred to the masks worn by actors on stage. The various masks represented the various &quot;personae&quot; in the stage play.&lt;ref name=&quot;CathEnc&quot;&gt;{{cite encyclopedia|last=Geddes|first=Leonard|title=Person|encyclopedia=[[Catholic Encyclopedia]]|publisher=Robert Appleton Company|location=New York|year=1911|volume=11|url=http://www.newadvent.org/cathen/11726a.htm|accessdate=2011-03-09|quote=The Latin word persona was originally used to denote the mask worn by an actor. From this it was applied to the role he assumed, and, finally, to any character on the stage of life, to any individual.}}&lt;/ref&gt; \n"
+			+ "'''Russ Conway''' (2 September 1925 – 16 November 2000) was a British [[popular music]] [[pianist]].&lt;ref name=&quot;British Hit Singles &amp; Albums&quot;&gt;{{cite book\n"
+			+ "| first= David\n"
+			+ "| last= Roberts\n"
+			+ "| year= 2006\n"
+			+ "| title= British Hit Singles &amp; Albums\n"
+			+ "| edition= 19th\n"
+			+ "| publisher= Guinness World Records Limited \n"
+			+ "| location= London\n"
+			+ "| isbn= 1-904994-10-5\n"
+			+ "| pages= 118/9}}&lt;/ref&gt;  Conway had 20 [[piano]] [[instrumental]]s in the [[UK Singles Chart]] between 1957 and 1963, including two [[Chart-topper|number one]] [[hit record|hits]].&lt;ref name=&quot;British Hit Singles &amp; Albums&quot;/&gt;\n"
 			+ "\n"
-			+ "The current concept of person was developed during the [[Trinitarianism|Trinitarian]] and [[Christology|Christological]] debates of the 4th and 5th centuries in contrast to the word nature.&lt;ref&gt;Thisleton NIGNTC commentary on 1 Corinthians &quot;Thinkers in ancient times had a difficulty in expressing the notion of personality&quot;; Barfield in History of English Words “Take, for instance, the word person...Its present meaning of an individual human being is largely due to the theologians who hit upon it when they were looking for some term that would enable them to assert the trinity of Godhead without admitting more than one 'substance'&quot;; John Zizioulas in Being as Communion 1985 New York:St Vladimirs Press p27writes: &quot;although the person and “personal identity” are Widely discussed nowadays as a supreme ideal, nobody seems to recognize that historically as well as existentially the concept of the person is indissolubly bound up with theology&quot; &lt;/ref&gt; \n"
-			+ "During the theological debates, some'philosophical tools (concepts) were needed so that the debates could be held on common basis to all theological schools. The purpose of the debate was to establish the relation, similarities and differences between the Λóγος/&quot;Verbum&quot; and God. The philosophical concept of person arose, taking the word &quot;[[prosopon]]&quot; (πρόσωπον) from the [[Theatre of ancient Greece|Greek theatre]]. Therefore, Christus (the Λóγος/&quot;Verbum&quot;) and God were defined as different &quot;persons&quot;. This concept was applied later to the Holy Ghost, the angels and to all human beings.  \n"
+			+ "==Career==\n"
+			+ "Conway was born '''Trevor Herbert Stanford''' in [[Bristol]] England.&lt;ref name=&quot;Larkin&quot;&gt;Larkin C 'Virgin Encyclopedia of Sixties Music' (Muze UK Ltd, 1997) ISBN 0-7535-0149-X p125&lt;/ref&gt; He won a scholarship to [[Bristol Cathedral Choir School]]&lt;ref name=&quot;Larkin&quot; /&gt; and was largely self-taught on piano as he whiled away hours as a youngster during a three-year term in borstal. His father then let him join the [[Merchant Navy (United Kingdom)|Merchant Navy]]. \n"
 			+ "\n"
-			+ "Since then, a number of important changes to the word's meaning and use have taken place, and attempts have been made to redefine the word with varying degrees of adoption and influence. In addition to the question of personhood, of what makes a being count as a person to begin with, there are further questions about [[personal identity]]: both about what makes any particular person that particular person instead of another, and about what makes a person at one time the same person as he or she was or will be at another time despite any intervening changes. The common plural of &quot;person&quot;, &quot;[[people]]&quot;, is often used to refer to an entire [[nation]] or [[ethnic group]] (as in &quot;a people&quot;). The plural &quot;persons&quot; is often used in [[philosophy|philosophical]] and [[law|legal]] writing.\n"
+			+ "Conscripted into the [[Royal Navy]] in 1942, he served in the Merchant Navy from 1942 to 1948, and was awarded the [[Distinguished Service Medal (United Kingdom)|Distinguished Service Medal]] as signalman in a minesweeping flotilla &quot;for distinguished service, efficiency and zeal&quot; in clearance of mines in the [[Aegean Sea|Aegean]] and operations during the relief of [[Greece]] 1944-45. During his Navy service, he lost the tip of the 3rd finger of his right hand while using a bread slicer.&lt;ref name=&quot;Larkin&quot; /&gt; He was discharged on health grounds because of a stomach ulcer.\n"
 			+ "\n"
-			+ "==Personhood==\n"
-			+ "[[File:Paul Klee WI (In Memoriam) 1938.jpg|thumb|An abstract painting of a person by [[Paul Klee]]. The concept of a person can be very challenging to define.]]\n"
-			+ "{{main|Personhood}}\n"
+			+ "Conway was talent-spotted while playing in a [[London]] [[nightclub|club]], signed to EMI's [[Columbia Graphophone Company|Columbia]] label and spent the mid-1950s providing backing for artists on their roster, including [[Gracie Fields]] and [[Joan Regan]].&lt;ref name=&quot;Larkin&quot; /&gt; He recorded his first [[solo (music)|solo]] [[single (music)|single]] &quot;Party Pops&quot; in 1957, a &quot;medley of standard songs&quot;&lt;ref name=&quot;Larkin&quot; /&gt; which included &quot;Roll the Carpet Up&quot; and &quot;The Westminster Waltz&quot;.\n"
 			+ "\n"
-			+ "{{quotation|The criteria for being a person... are designed to capture those attributes which are the subject of our most humane concern with ourselves and the source of what we regard as most important and most problematical in our lives.|Harry G. Frankfurt|}}\n"
-			+ "Personhood is the status of being a person. Defining personhood is a controversial topic in [[philosophy]] and [[law]], and is closely tied to legal and [[political]] concepts of [[citizenship]], [[equality before the law|equality]], and [[liberty]]. According to law, only a [[natural person]] or [[legal personality]] has [[rights]], protections, privileges, responsibilities, and [[legal liability]].\n"
-			+ "Personhood continues to be a topic of international debate, and has been questioned during the abolition of [[slavery]] and the fight for [[women's rights]], in debates about [[abortion]], [[fetal rights]] and [[reproductive rights]], and in [[animal rights]] advocacy.&lt;ref&gt;For a discussion of non-human personhood, see Midgley, Mary. [http://www.animal-rights-library.com/texts-m/midgley01.htm &quot;Persons and non-persons&quot;], in Peter Singer (ed.) ''In Defense of Animals''. Basil Blackwell, 1985, pp. 52-62.&lt;/ref&gt;\n"
+			+ "Between 1957 and 1963, Conway had 20 U.K. chart hits, achieving a cumulative total of 83 weeks on the [[UK Singles Chart]] in 1959 alone.&lt;ref name=&quot;British Hit Singles &amp; Albums&quot;/&gt;  This included two self-penned number one [[instrumental]]s, &quot;Side Saddle&quot; and &quot;Roulette&quot;, the latter deposing [[Elvis Presley]]'s &quot;[[A Fool Such As I]]&quot;. He was a fixture on light entertainment [[Television|TV]] shows and [[radio]] for many years afterwards, appearing at the [[London Palladium]] on a number of occasions&lt;ref name=&quot;Larkin&quot; /&gt; and becoming a regular on the [[Billy Cotton Band Show]] for several seasons. He also made recordings as a vocalist.\n"
 			+ "\n"
-			+ "Various debates have focused on questions about the personhood of different classes of entities. Historically, the personhood of animals, women, and slaves has been a catalyst of social upheaval. In most societies today, living adult humans are usually considered persons, but depending on the context, theory or definition, the category of &quot;person&quot; may be taken to include such [[Non human|non-human]] entities as [[animals]], [[artificial intelligences]], or [[extraterrestrial life]], as well as legal entities such as [[corporations]], [[sovereign states]] and other [[polities]], or [[estate]]s in [[probate]].&lt;ref&gt;For corporations, see [http://www.nytimes.com/2010/01/22/us/politics/22scotus.html &quot;Justices, 5-4, Reject Corporate Spending Limit&quot;], ''The New York Times'', January 21, 2010.&lt;/ref&gt; The category may exclude some human entities in [[prenatal]] development, and those with extreme mental impairment.\n"
+			+ "He was the subject of ''[[This Is Your Life (UK TV series)|This Is Your Life]]'' in 1959, when he was surprised by [[Eamonn Andrews]] during a recording session at the BBC’s Studio 1 at 201 Piccadilly, London.\n"
 			+ "\n"
-			+ "==Personal identity==\n"
-			+ "[[Image:MontreGousset001.jpg|thumb|What does it take for individuals to persist from moment to moment – or in other words, for the same individual to exist at different moments?]]\n"
-			+ "{{main|Personal identity}}\n"
+			+ "His career was blighted by ill health, including a nervous breakdown and subsequently a stroke, which prevented him from performing between 1968 and 1971.&lt;ref name=&quot;Larkin&quot; /&gt; He also at times drank heavily and smoked up to 80 cigarettes a day. He was prescribed anti-depressants and had periods of severe self-doubt. But he kept up playing. Having been diagnosed with stomach cancer in the late 1980s, in 1990 he founded the Russ Conway Cancer Fund with his friend, writer and [[Presenter|broadcaster]] Richard Hope-Hawkins, and they staged [[charitable organization|charity]] gala shows in major theatres that raised thousands of pounds for [[cancer]] charities.{{citation needed|date=August 2011}}\n"
 			+ "\n"
-			+ "Personal identity is the [[Identity (philosophy)|unique identity]] of persons through time. That is to say, the necessary and sufficient conditions under which a person at one time and a person at another time can be said to be the ''same'' person, persisting through time. In the modern [[philosophy of mind]], this concept of personal identity is sometimes referred to as the ''[[wikt:diachronic|diachronic]]'' problem of personal identity. The ''[[wikt:synchronic|synchronic]]'' problem is grounded in the question of what features or traits characterize a given person at one time.\n"
+			+ "He appeared as himself in [[French and Saunders]]' 1994 Christmas special, playing &quot;I Like It&quot; in their spoof of ''[[The Piano]]''.&lt;ref&gt;{{cite episode |title= 1994 Christmas Special|episodelink= |series= [[French and Saunders]]|serieslink= |credits= |network= [[Gold (TV channel)|Gold]]|station= |airdate= 24 April 2009|season= |seriesno= |number= |minutes= }}&lt;/ref&gt;\n"
 			+ "\n"
-			+ "Identity is an issue for both [[continental philosophy]]{{citation needed|date=October 2012}} and [[analytic philosophy]]{{citation needed|date=October 2012}}. A key question in continental philosophy is in what sense we can maintain the modern conception of identity, while realizing many of our prior assumptions about the world are incorrect{{citation needed|date=October 2012}}.\n"
+			+ "Conway, who never married, died on 16 November 2000.&lt;ref&gt;GRO Register of Deaths NOV 2000 C48E 22 EASTBOURNE. DoB = 2 September 1925&lt;/ref&gt; Richard Hope-Hawkins delivered the main eulogy at Conway's [[funeral]] held at the historic [[St Mary Redcliffe|St Mary's Church]], [[Redcliffe, Bristol|Redcliffe]], Bristol. [[Elton John]] sent a wreath. In 2001 Hope-Hawkins devised, staged and directed a tribute to Conway at the [[Colston Hall]], Bristol, with an all-star cast. The £11,000 raised by the event was donated to St Peter's Hospice, Bristol.\n"
 			+ "\n"
-			+ "Proposed solutions to the problem of personal identity include: continuity of the physical body, continuity of an immaterial mind or soul, continuity of consciousness or memory{{citation needed|date=October 2012}}, the [[bundle theory]] of self{{citation needed|date=October 2012}}, continuity of personality after the death of the physical body,&lt;ref&gt;For a discussion of post-mortal personhood, see Roth, S. (2013) ''Dying is only human. The case death makes for the immortality of the person''. Tamara Journal for Critical Organization Inquiry, Vol. 11, No. 2, pp. 35-39. [http://ssrn.com/abstract=2260793]&lt;/ref&gt; and proposals that there are actually no persons or selves which persist over time at all{{citation needed|date=October 2012}}.\n"
+			+ "==Discography==\n"
+			+ "\n"
+			+ "===LPs===\n"
+			+ "* ''Pack Up Your Troubles'' (1958) - [[UK Albums Chart]] No.9	\n"
+			+ "* ''Songs To Sing In Your Bath'' (1959) - UK No.8\n"
+			+ "* ''Family Favourites'' (1959) - UK No.3\n"
+			+ "* ''Time To Celebrate'' (1959) - UK No.3		\n"
+			+ "* ''My Concerto For You'' (1960) - UK No.5 	\n"
+			+ "* ''Party Time'' (1960) - UK No.7\n"
+			+ "* ''At The Cinema'' (1961)\n"
+			+ "* ''Time To Play'' (1966)			\n"
+			+ "* ''Russ Conway Presents 24 Piano Greats'' (1977) - UK No.25\n"
+			+ "&lt;ref name=&quot;British Hit Singles &amp; Albums&quot;/&gt;\n"
+			+ "\n"
+			+ "===Singles===\n"
+			+ "UK singles with highest position in the [[UK Singles Chart]]\n"
+			+ "\n"
+			+ "* &quot;Party Pops&quot; (1957) No.24\n"
+			+ "* &quot;Got a Match&quot; (1958) No.30\n"
+			+ "* &quot;More Party Pops&quot; (1958) No.10\n"
+			+ "* &quot;The World Outside&quot; (1959) No.24\n"
+			+ "* &quot;[[Side Saddle]]&quot; (1959) No.1\n"
+			+ "* &quot;[[Roulette (instrumental)|Roulette]]&quot; (1959) No.1\n"
+			+ "* &quot;China Tea&quot; (1959) No.5\n"
+			+ "* &quot;Snow Coach&quot; (1959) No.7\n"
+			+ "* &quot;More And More Party Pops&quot; (1959) No.5\n"
+			+ "* &quot;Royal Event&quot; (1960) No.15\n"
+			+ "* &quot;Fings Ain't Wot They Used To Be&quot; (1960) No.47\n"
+			+ "* &quot;Lucky Five&quot; (1960) No.14\n"
+			+ "* &quot;Passing Breeze&quot; (1960) No.16\n"
+			+ "* &quot;Even More Party Pops&quot; (1960) No.27\n"
+			+ "* &quot;Pepe&quot; (1961) No.19\n"
+			+ "* &quot;Pablo&quot; (1961) No.45\n"
+			+ "* &quot;Say It With Flowers&quot; (1961) No.23\n"
+			+ "* &quot;Toy Balloons&quot; (1961) No.7\n"
+			+ "* &quot;Lesson One&quot; (1962) No.21\n"
+			+ "* &quot;Always You And Me&quot; (1962) No.33\n"
+			+ "&lt;ref name=&quot;British Hit Singles &amp; Albums&quot;/&gt;\n"
 			+ "\n"
 			+ "==See also==\n"
-			+ "{{columns-list|3|\n"
-			+ "* [[Animal rights]]\n"
-			+ "* [[Anthropocentrism]]\n"
-			+ "* [[Anthropology]]\n"
-			+ "* [[Beginning of human personhood]]\n"
-			+ "* [[Being]]\n"
-			+ "* ''[[Capitis deminutio]]''\n"
-			+ "* [[Moral character|Character]]\n"
-			+ "* [[Citizenship]]\n"
-			+ "* [[Consciousness]]\n"
-			+ "* [[Corporate personhood]]\n"
-			+ "* [[Great Ape personhood]]\n"
-			+ "* [[Juridical person]]\n"
-			+ "* [[Juristic person]]\n"
-			+ "* [[Human]]\n"
-			+ "* [[Identity (social science)|Identity]]\n"
-			+ "* [[Individual]]\n"
-			+ "* [[Immanuel Kant]]\n"
-			+ "* [[Legal fiction]]\n"
-			+ "* [[Nonperson]]\n"
-			+ "* [[People]]\n"
-			+ "* [[Personality psychology|Personality]]\n"
-			+ "* [[Personhood movement]]\n"
-			+ "* [[Personoid]]\n"
-			+ "* [[Phenomenology (philosophy)|Phenomenology]]\n"
-			+ "* [[Subject (philosophy)]]\n"
-			+ "* [[Surety]]\n"
-			+ "* [[Theory of mind]]\n"
-			+ "}}\n"
+			+ "* [[List of best-selling music artists]]\n"
 			+ "\n"
 			+ "==References==\n"
 			+ "{{reflist}}\n"
 			+ "\n"
-			+ "==Further reading==\n"
-			+ "*{{cite book|editor1-last=Lukes|editor1-first=Steven|editor2-last=Carrithers|editor2-first=Michael|editor3-last=Collins|editor3-first=Steven|title=The category of the person: Anthropology, philosophy, history|year=1987|publisher=Cambridge University Press|location=Cambridge|isbn=0-521-27757-4}}\n"
-			+ "* Cornelia J.de Vogel ''The concept of personality in Greek and Christian thought''. In Studies in philosophy and the history of philosophy. Vol. 2. Edited by J. K. Ryan, Washington: Catholic University of America Press 1963. pp.&amp;nbsp;20–60\n"
-			+ "* {{cite book|last=Puccetti|first=Roland|title=Persons: A Study of Possible Moral Agents in the Universe|year=1968|publisher=Macmillan and Company|location=London}}\n"
-			+ "* {{CathEncy|wstitle=Person}}\n"
-			+ "* {{cite encyclopedia|last=Korfmacher|first=Carsten|title=Personal Identity|encyclopedia=The [[Internet Encyclopedia of Philosophy]]|date=May 29, 2006|url=http://www.iep.utm.edu/p/person-i.htm|accessdate=2011-03-09}}\n"
-			+ "\n"
 			+ "==External links==\n"
-			+ "{{Wiktionary|person}}\n"
-			+ "* [http://ieet.org/index.php/IEET/RNHP Rights of Non-Human Persons Program] (Institute for Ethics and Emerging Technologies)\n"
+			+ "*[http://www.russconway.co.uk/ Russ Conway]\n"
+			+ "*[http://www.onlineweb.com/theones/conway/russ_conway.htm Russ Conway - British Pianist]\n"
+			+ "*[http://www.bigredbook.info/russ_conway.html Russ Conway's appearance on This Is Your Life]\n"
+			+ "*{{YouTube|TnIpQhDn4Zg|Russ Conway playing Side Saddle}}\n"
 			+ "\n"
-			+ "[[Category:Concepts in ethics]]\n"
-			+ "[[Category:Humans]]\n"
-			+ "[[Category:People| ]]\n"
-			+ "[[Category:Personal life]]\n"
-			+ "[[Category:Personhood]]\n"
-			+ "[[Category:Self]]";
+			+ "{{Authority control|VIAF=41343596}}\n"
+			+ "\n"
+			+ "&lt;!-- Metadata: see [[Wikipedia:Persondata]] --&gt;\n"
+			+ "{{Persondata\n"
+			+ "| NAME              =Conway, Russ\n"
+			+ "| ALTERNATIVE NAMES =Stanford, Trevor Herbert\n"
+			+ "| SHORT DESCRIPTION =Pianist\n"
+			+ "| DATE OF BIRTH     = 2 September 1925\n"
+			+ "| PLACE OF BIRTH    = [[Bristol]], [[Gloucestershire]], [[England]], UK\n"
+			+ "| DATE OF DEATH     = 16 November 2000\n"
+			+ "| PLACE OF DEATH    = [[Eastbourne]], [[Sussex]], [[England]], UK\n"
+			+ "\n"
+			+ "}}\n"
+			+ "{{DEFAULTSORT:Conway, Russ}}\n"
+			+ "[[Category:1925 births]]\n"
+			+ "[[Category:2000 deaths]]\n"
+			+ "[[Category:English pianists]]\n"
+			+ "[[Category:English songwriters]]\n"
+			+ "[[Category:People from Bristol]]\n"
+			+ "[[Category:Billy Cotton Band Show]]\n"
+			+ "[[Category:Cub Records artists]]\n"
+			+ "[[Category:Music in Bristol]]";
 }

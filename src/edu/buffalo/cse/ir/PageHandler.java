@@ -9,8 +9,9 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -28,6 +29,8 @@ public class PageHandler extends DefaultHandler {
 	private Page page;
 	private String inputXmlFileName;
 	private StringBuffer sb;
+	private String pageTitle;
+	private String pageText;
 	private final Stack<String> tagsStack = new Stack<String>();
 
 	private void parseDocument() {
@@ -70,11 +73,33 @@ public class PageHandler extends DefaultHandler {
 				WikipediaDocument doc = new WikipediaDocument(
 						Integer.parseInt(pages.getId()), pages.getTimeStamp(),
 						pages.getUserName(), pages.getTitle());
+
+				if (pages.getText() != null) {
+					pageText = pages.getText();
+					pageTitle = pages.getTitle();
+					doc.addCategoriesP(getCategories(pageText));
+					doc.addSectionP(pageTitle, pageText);
+					//System.out.println(pageTitle);
+				}
 				docs.add(doc);
 			}
 			return docs;
 		}
 		// System.out.println(listOfPages.get(0).getTitle());
+	}
+
+	public Collection<String> getCategories(String input) {
+		Collection<String> categories = new ArrayList<String>();
+
+		if (input.contains("Category")) {
+			Pattern pattern = Pattern.compile("\\[\\[Category:(.+)\\]\\]");
+
+			Matcher matcher = pattern.matcher(input);
+			while (matcher.find()) {
+				categories.add(matcher.group(1));
+			}
+		}
+		return categories;
 	}
 
 	public void startElement(String s, String s1, String elementName,
@@ -113,7 +138,7 @@ public class PageHandler extends DefaultHandler {
 		if (element.equalsIgnoreCase("title")) {
 			page.setTitle(sb.toString());
 		}
-		if (element.equalsIgnoreCase("comment")) { // TODO: Replace with text
+		if (element.equalsIgnoreCase("text")) {
 			page.setText(sb.toString());
 		}
 		if (element.equalsIgnoreCase("username")
@@ -139,7 +164,7 @@ public class PageHandler extends DefaultHandler {
 
 	public static void main(String[] args) throws ParseException {
 		long startTime = System.currentTimeMillis();
-		//new PageHandler("/Users/naren/Documents/ir/WikiDump_1600.xml");
+		// new PageHandler("/Users/naren/Documents/ir/WikiDump_1600.xml");
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
 		System.out.println(totalTime);

@@ -46,10 +46,11 @@ public class Parser {
 				}
 				PageHandler pageHandler = new PageHandler();
 
-				Collection<WikipediaDocument> docsFromXml = pageHandler
-						.fetchDocuments(filename);
-				docs = docsFromXml;
-				System.out.println(docs.size());
+				docs.addAll(pageHandler.fetchDocuments(filename));
+					
+				
+				System.out.println("DEBUG: No of entries in xml: "
+						+ docs.size());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
