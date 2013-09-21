@@ -57,8 +57,7 @@ public class IndexableDocument {
 	 * @return A unique identifier for the given document
 	 */
 	public String getDocumentIdentifier() {
-		Random r = new Random();
-		return String.valueOf(r.nextInt());
+	return "";
 	}
 
 }

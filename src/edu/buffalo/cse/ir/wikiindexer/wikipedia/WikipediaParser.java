@@ -140,10 +140,11 @@ public class WikipediaParser {
 	 *         element is the link url
 	 */
 	public static String[] parseLinks(String text) {
+
 		String[] parsedLink = new String[2];
-		if (text == null)
-			return null;
-		else if (text.isEmpty())
+		parsedLink[0] = "";
+		parsedLink[1] = "";
+		if (text == null || text.isEmpty())
 			return parsedLink;
 
 		if (text.contains("(")) {
@@ -153,7 +154,7 @@ public class WikipediaParser {
 			matcher.find();
 			parsedLink[0] = matcher.group(1);
 			StringBuilder str = new StringBuilder(parsedLink[0]);
-			str.insert(0, "http://en.wikipedia.org/wiki/");
+		//	str.insert(0, "http://en.wikipedia.org/wiki/");
 			parsedLink[1] = str.toString();
 			return parsedLink;
 
@@ -164,7 +165,7 @@ public class WikipediaParser {
 			matcher.find();
 			parsedLink[0] = matcher.group(1);
 			StringBuilder str = new StringBuilder(parsedLink[0]);
-			str.insert(0, "http://en.wikipedia.org/wiki/");
+		//	str.insert(0, "http://en.wikipedia.org/wiki/");
 			parsedLink[1] = str.toString();
 			return parsedLink;
 		}
@@ -176,7 +177,7 @@ public class WikipediaParser {
 			matcher.find();
 			parsedLink[0] = matcher.group(1);
 			StringBuilder str = new StringBuilder(parsedLink[0]);
-			str.insert(0, "http://en.wikipedia.org/wiki/");
+		//	str.insert(0, "http://en.wikipedia.org/wiki/");
 			parsedLink[1] = str.toString();
 			return parsedLink;
 		}

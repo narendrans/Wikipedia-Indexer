@@ -156,7 +156,6 @@ public class PageHandler extends DefaultHandler {
 		try {
 			super.characters(c, i, j);
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		sb.append(c, i, j);

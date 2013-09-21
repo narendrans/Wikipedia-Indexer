@@ -6,6 +6,8 @@ package edu.buffalo.cse.ir.wikiindexer.tokenizer;
 import java.util.Properties;
 
 import edu.buffalo.cse.ir.wikiindexer.indexer.INDEXFIELD;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.PunctuationRule;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.SpecialCharsRule;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.WhiteSpaceRule;
 
 /**
@@ -62,7 +64,8 @@ public class TokenizerFactory {
 		 */
 		try {
 			if (field == INDEXFIELD.TERM)
-				return new Tokenizer(new WhiteSpaceRule());
+				return new Tokenizer(new WhiteSpaceRule(),
+						new PunctuationRule(), new SpecialCharsRule());
 			if (field == INDEXFIELD.CATEGORY)
 				return new Tokenizer(new WhiteSpaceRule());
 			if (field == INDEXFIELD.AUTHOR)

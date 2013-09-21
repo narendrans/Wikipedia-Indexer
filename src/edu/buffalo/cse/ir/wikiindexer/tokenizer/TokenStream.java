@@ -4,7 +4,6 @@
 package edu.buffalo.cse.ir.wikiindexer.tokenizer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,10 +19,44 @@ import java.util.Map;
  * 
  */
 public class TokenStream implements Iterator<String> {
-	public StringBuilder stringBuilder;
-	ArrayList<String> list;
-	String[] arrayList;
-	int currentPosition = 0;
+
+	private StringBuilder stringBuilder;
+	private String token;
+	private List<String> stream;
+	private int position;
+	private boolean streamCheck = false;
+
+	public StringBuilder getStringBuilder() {
+		return stringBuilder;
+	}
+
+	public void setStringBuilder(StringBuilder stringBuilder) {
+		this.stringBuilder = stringBuilder;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public List<String> getStream() {
+		return stream;
+	}
+
+	public void setStream(List<String> stream) {
+		this.stream = stream;
+	}
+
+	public int getPosition() {
+		return position;
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
+	}
 
 	/**
 	 * Default constructor
@@ -31,19 +64,9 @@ public class TokenStream implements Iterator<String> {
 	 * @param bldr
 	 *            : THe stringbuilder to seed the stream
 	 */
-
-	public static void main(String[] args) {
-		TokenStream s = new TokenStream(
-				"test the the the is test test of test thing out of box");
-		System.out.println(s.query("test"));
-
-	}
-
 	public TokenStream(StringBuilder bldr) {
-		this.stringBuilder = new StringBuilder();
-		this.stringBuilder.append(bldr);
-		this.list.add(bldr.toString());
-
+		stream = new ArrayList<String>();
+		stream.add(bldr.toString());
 	}
 
 	/**
@@ -53,10 +76,16 @@ public class TokenStream implements Iterator<String> {
 	 *            : THe stringbuilder to seed the stream
 	 */
 	public TokenStream(String string) {
-		list = new ArrayList<String>();
-		this.stringBuilder = new StringBuilder();
-		this.stringBuilder.append(string);
-		this.list.add(string);
+		if (string == null || string.equals("")) {
+			stream = new ArrayList<String>();
+			streamCheck = false;
+			return;
+		} else if (string != null) {
+			streamCheck = true;
+			stream = new ArrayList<String>();
+			stream.add(string);
+		}
+		position = 0;
 	}
 
 	/**
@@ -66,9 +95,16 @@ public class TokenStream implements Iterator<String> {
 	 *            : The tokens to be appended
 	 */
 	public void append(String... tokens) {
-		for (String string : tokens) {
-			list.add(string);
-		}
+		if (tokens == null || tokens[0].equals(""))
+			return;
+		if (tokens != null) {
+			for (int i = 0; i < tokens.length; i++) {
+				if (tokens[i] == null || tokens[i].equals(""))
+					continue;
+				this.stream.add(tokens[i]);
+			}
+		} else
+			stream = null;
 	}
 
 	/**
@@ -80,12 +116,13 @@ public class TokenStream implements Iterator<String> {
 	 *         applicable
 	 */
 	public Map<String, Integer> getTokenMap() {
-
+		if (stream == null || !streamCheck)
+			return null;
 		Map<String, Integer> map = new HashMap<String, Integer>();
-		for (int i = 0; i < list.size(); i++) {
-			int occurences = Collections.frequency(list, list.get(i));
-			if (!map.containsKey(list.get(i)))
-				map.put(list.get(i), occurences);
+		for (int i = 0; i < stream.size(); i++) {
+			int occurences = Collections.frequency(stream, stream.get(i));
+			if (!map.containsKey(stream.get(i)))
+				map.put(stream.get(i), occurences);
 		}
 		return map;
 	}
@@ -93,16 +130,25 @@ public class TokenStream implements Iterator<String> {
 	/**
 	 * Method to get the underlying token stream as a collection of tokens
 	 * 
-	 * @return A collection containingB the ordered tokens as wrapped by this
+	 * @return A collection containing the ordered tokens as wrapped by this
 	 *         stream Each token must be a separate element within the
 	 *         collection. Operations on the returned collection should NOT
 	 *         affect the token stream
 	 */
 	public Collection<String> getAllTokens() {
-		// Since the actual list should not be affected, make a copy and return
-		// it
-		ArrayList<String> newList = this.list;
-		return newList;
+		if (stream == null)
+			return null;
+		if(stream.isEmpty())
+			return null;
+		if (stream != null) {
+			List<String> temp = new ArrayList<String>();
+			if (stream.isEmpty())
+				return temp;
+
+			temp.addAll(stream);
+			return temp;
+		} else
+			return null;
 	}
 
 	/**
@@ -113,9 +159,15 @@ public class TokenStream implements Iterator<String> {
 	 * @return: THe number of times it occurs within the stream, 0 if not found
 	 */
 	public int query(String token) {
-		List<String> s = Arrays
-				.asList(this.stringBuilder.toString().split(" "));
-		return Collections.frequency(s, token);
+		int count = 0;
+		if (stream != null) {
+			if (stream.contains(token)) {
+				count = Collections.frequency(stream, token);
+				return count;
+			}
+		} else
+			return 0;
+		return count;
 	}
 
 	/**
@@ -124,10 +176,12 @@ public class TokenStream implements Iterator<String> {
 	 * @return true if a token exists to iterate over, false otherwise
 	 */
 	public boolean hasNext() {
-		if (!list.isEmpty())
-			return true;
-		else
+		if (stream == null)
 			return false;
+		if (position == stream.size())
+			return false;
+
+		return true;
 	}
 
 	/**
@@ -136,10 +190,10 @@ public class TokenStream implements Iterator<String> {
 	 * @return true if a token exists to iterate over, false otherwise
 	 */
 	public boolean hasPrevious() {
-		if (list.size() > 0)
-			return true;
-		else
+		if (stream == null || position <= 0)
 			return false;
+		else
+			return true;
 	}
 
 	/**
@@ -150,10 +204,13 @@ public class TokenStream implements Iterator<String> {
 	 * @return The next token from the stream, null if at the end
 	 */
 	public String next() {
-		if (currentPosition == list.size())
+		if (stream == null || position >= stream.size())
 			return null;
-		else
-			return list.get(currentPosition++);
+		else {
+			String x = stream.get(position);
+			position = position + 1;
+			return x;
+		}
 	}
 
 	/**
@@ -164,17 +221,28 @@ public class TokenStream implements Iterator<String> {
 	 * @return The next token from the stream, null if at the end
 	 */
 	public String previous() {
-		if (currentPosition == list.size())
+		// if position is 0, no element is there behind 1st element
+		// if position is -1, no element is there at all
+		if (stream == null || position <= 0)
 			return null;
-		else
-			return list.get(currentPosition--);
+		else {
+
+			position = position - 1;
+			return stream.get(position);
+
+		}
 	}
 
 	/**
-	 * Iterator method: Method to remove the current token from the stream
+	 * Iterator method: Method to remove the current token from the stream. The
+	 * iterator should point to the next token in forward iteration.
 	 */
 	public void remove() {
-		list.remove(currentPosition);
+		if (stream == null || position == stream.size())
+			return;
+		if (stream != null) {
+			stream.remove(position);
+		}
 
 	}
 
@@ -187,12 +255,16 @@ public class TokenStream implements Iterator<String> {
 	 */
 	public boolean mergeWithPrevious() {
 		try {
-			list.set(currentPosition - 1, list.get(currentPosition - 1) + " "
-					+ list.get(currentPosition));
-			list.remove(currentPosition);
-			currentPosition = currentPosition - 1;
+			if (position == 0)
+				return false;
+			int prevPosition = position - 1;
+			String currentString = stream.get(position);
+			String prevString = stream.get(prevPosition);
+			stream.set(position, prevString + " " + currentString);
+			stream.remove(prevPosition);
+			position = position - 1;
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -207,12 +279,13 @@ public class TokenStream implements Iterator<String> {
 	 */
 	public boolean mergeWithNext() {
 		try {
-			list.set(
-					currentPosition,
-					list.get(currentPosition) + " "
-							+ list.get(currentPosition - 1));
+			int nextPosition = position + 1;
+			String currentString = stream.get(position);
+			String nextString = stream.get(nextPosition);
+			stream.set(position, currentString + " " + nextString);
+			stream.remove(nextPosition);
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -230,9 +303,31 @@ public class TokenStream implements Iterator<String> {
 	 *            element within the array
 	 */
 	public void set(String... newValue) {
+		if (stream == null || newValue == null || newValue[0] == null
+				|| newValue[0].equals("") || position == stream.size()) {
+			return;
+		} else {
+			int temppos = position;
+			for (String string : newValue) {
 
-		for (int i = 0; i < newValue.length; i++)
-			this.list.add(newValue[i]);
+				if (temppos == position) {
+					stream.set(temppos, string);
+					temppos = temppos + 1;
+				} else {
+					stream.add(temppos, string);
+					temppos = temppos + 1;
+				}
+
+				/*
+				 * if (temppos >= stream.size()) { stream.add(string); temppos =
+				 * temppos + 1; } else { if(newValue.length==1){
+				 * stream.set(temppos, string); temppos = temppos + 1; } else {
+				 * stream.add(temppos,string); temppos=temppos+1; }
+				 */
+			}
+			// position = stream.indexOf(newValue[newValue.length]);
+			position = temppos - 1;
+		}
 	}
 
 	/**
@@ -240,7 +335,7 @@ public class TokenStream implements Iterator<String> {
 	 * next must be called to get a token
 	 */
 	public void reset() {
-		this.currentPosition = 0;
+		position = 0;
 	}
 
 	/**
@@ -248,7 +343,9 @@ public class TokenStream implements Iterator<String> {
 	 * the stream previous must be called to get a token
 	 */
 	public void seekEnd() {
-		this.currentPosition = currentPosition + 1;
+		if (stream == null)
+			return;
+		position = stream.size();
 	}
 
 	/**
@@ -258,6 +355,11 @@ public class TokenStream implements Iterator<String> {
 	 *            : The stream to be merged
 	 */
 	public void merge(TokenStream other) {
-		this.list.addAll(other.list);
+		if (other == null || stream == null)
+			return;
+		if (this.stream.isEmpty())
+			this.stream = other.stream;
+		else
+			stream.addAll(other.stream);
 	}
 }

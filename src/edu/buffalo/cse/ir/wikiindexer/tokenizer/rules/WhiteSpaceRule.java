@@ -14,8 +14,8 @@ public class WhiteSpaceRule implements TokenizerRule {
 
 	@Override
 	public void apply(TokenStream stream) throws TokenizerException {
-		if (stream != null)
-			stream.set(removeWhiteSpace(stream.stringBuilder.toString()));
+	//	if (stream != null)
+			//stream.set(removeWhiteSpace(stream.stringBuilder.toString()));
 	}
 
 }
