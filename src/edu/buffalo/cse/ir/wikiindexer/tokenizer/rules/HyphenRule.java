@@ -12,6 +12,10 @@ public class HyphenRule implements TokenizerRule {
 	}
 
 	private static String removeHyphen(String input) {
+		if (input.matches(" *\\-+\\*"))
+			return input.replaceAll("-", "");
+		if (input.matches("\\-*[a-zA-Z]+\\-*"))
+			return input.replaceAll("-", "");
 		if (input.matches("[a-zA-Z]+\\-[a-zA-Z]+"))
 			return input.replaceAll("-", " ");
 		else if (input.matches("[a-zA-Z]+\\-[0-9]+")
@@ -28,6 +32,11 @@ public class HyphenRule implements TokenizerRule {
 			String token;
 			while (stream.hasNext()) {
 				token = stream.next();
+				token = token.trim();
+				if (token.matches("\\-+")) {
+					stream.remove();
+					continue;
+				}
 				if (token != null) {
 					token = removeHyphen(token);
 					stream.set(token);
