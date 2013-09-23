@@ -22,7 +22,7 @@ public interface IndexerConstants {
 	}
 	
 	/* Total number of properties */
-	public static final int NUM_PROPERTIES = 4;
+	public static final int NUM_PROPERTIES = 15;
 	
 	/* Root directory */
 	@RequiredConstant
@@ -39,5 +39,20 @@ public interface IndexerConstants {
 	/* Fully qualified temporary directory name */
 	@RequiredConstant
 	public static final String TEMP_DIR = "tmp.dir";
+	
+	/* comma separated name of rules that must be tested pre-tokenization */
+	public static final String PRETKNRULES = "pretkn.rules";
+	
+	/* tokenizer rule class names */
+	public static final String PUNCTUATIONRULE = "punct.rule";
+	public static final String APOSTROPHERULE = "apos.rule";
+	public static final String HYPHENRULE = "hyph.rule";
+	public static final String SPECIALCHARRULE = "spch.rule";
+	public static final String WHITESPACERULE = "space.rule";
+	public static final String DATERULE = "date.rule";
+	public static final String STOPWORDSRULE = "stwrds.rule";
+	public static final String ACCENTRULE = "accnt.rule";
+	public static final String CAPITALIZATIONRULE = "captl.rule";
+	public static final String NUMBERSRULE = "nmbrs.rule";
 	
 }

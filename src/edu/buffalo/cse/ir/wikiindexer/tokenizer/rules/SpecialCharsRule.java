@@ -24,6 +24,16 @@ public class SpecialCharsRule implements TokenizerRule {
 				token = stream.next();
 				if (token != null) {
 					token = removeSpecialChars(token);
+					if (token.equals("")) {
+						stream.remove();
+						continue;
+					}
+					if (token.contains("[a-zA-Z]\\*[a-zA-Z]")
+							|| token.contains("[a-zA-Z]\\^[a-zA-Z]")) {
+						String[] arr = token.split("\\+|\\-\\*");
+						stream.set(arr);
+						continue;
+					}
 					stream.set(token);
 				}
 			}

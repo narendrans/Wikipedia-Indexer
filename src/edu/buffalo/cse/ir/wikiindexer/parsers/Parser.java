@@ -49,6 +49,7 @@ public class Parser {
 				docs.addAll(pageHandler.fetchDocuments(filename));
 					
 				
+				
 				System.out.println("DEBUG: No of entries in xml: "
 						+ docs.size());
 			}

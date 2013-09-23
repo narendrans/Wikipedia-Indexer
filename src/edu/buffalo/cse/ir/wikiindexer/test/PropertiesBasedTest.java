@@ -31,8 +31,6 @@ protected Properties idxProps;
 	@Parameters
 	public static Collection<Object[]> generateData() {
 		String propFile = System.getProperty("PROPSFILENAME");
-		propFile = "/Users/naren/git/UB_IR/files/properties.config";
-		System.out.println("DEBUG: Prop file name is"+ propFile);
 		try {
 			Properties p = FileUtil.loadProperties(propFile);
 			return Arrays.asList(new Object[][]{{p}});

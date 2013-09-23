@@ -25,6 +25,7 @@ public class TokenStream implements Iterator<String> {
 	private List<String> stream;
 	private int position;
 	private boolean streamCheck = false;
+	private boolean remove = false;
 
 	public StringBuilder getStringBuilder() {
 		return stringBuilder;
@@ -138,7 +139,7 @@ public class TokenStream implements Iterator<String> {
 	public Collection<String> getAllTokens() {
 		if (stream == null)
 			return null;
-		if(stream.isEmpty())
+		if (stream.isEmpty())
 			return null;
 		if (stream != null) {
 			List<String> temp = new ArrayList<String>();
@@ -241,9 +242,13 @@ public class TokenStream implements Iterator<String> {
 		if (stream == null || position == stream.size())
 			return;
 		if (stream != null) {
-			stream.remove(position);
+			if (remove)
+				stream.remove(position - 1);
+			else
+				stream.remove(position);
 		}
 
+		this.remove = false;
 	}
 
 	/**
@@ -304,17 +309,17 @@ public class TokenStream implements Iterator<String> {
 	 */
 	public void set(String... newValue) {
 		if (stream == null || newValue == null || newValue[0] == null
-				|| newValue[0].equals("") || position == stream.size()) {
+				|| newValue[0].equals("") || stream.size() == 0) {
 			return;
 		} else {
 			int temppos = position;
 			for (String string : newValue) {
 
 				if (temppos == position) {
-					stream.set(temppos, string);
+					stream.set(temppos - 1, string);
 					temppos = temppos + 1;
 				} else {
-					stream.add(temppos, string);
+					stream.add(temppos - 1, string);
 					temppos = temppos + 1;
 				}
 
@@ -327,7 +332,9 @@ public class TokenStream implements Iterator<String> {
 			}
 			// position = stream.indexOf(newValue[newValue.length]);
 			position = temppos - 1;
+			this.remove = true;
 		}
+		// System.out.println("Inside token stream (Size): "+this.getAllTokens().size());
 	}
 
 	/**
