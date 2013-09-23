@@ -65,7 +65,7 @@ public class TokenizerFactory {
 		try {
 			if (field == INDEXFIELD.TERM)
 				return new Tokenizer(new WhiteSpaceRule(),
-						new PunctuationRule(), new SpecialCharsRule());
+						new PunctuationRule());
 			if (field == INDEXFIELD.CATEGORY)
 				return new Tokenizer(new WhiteSpaceRule());
 			if (field == INDEXFIELD.AUTHOR)
