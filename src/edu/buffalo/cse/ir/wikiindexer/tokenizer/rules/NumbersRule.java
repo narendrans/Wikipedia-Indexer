@@ -13,6 +13,8 @@ public class NumbersRule implements TokenizerRule {
 	}
 
 	private static String removeNumbers(String input) {
+		if(input.contains("%"))
+			input = input.replaceAll("[^\\%]", "");
 		return input.replaceAll("[0-9]+", "");
 	}
 
@@ -23,6 +25,11 @@ public class NumbersRule implements TokenizerRule {
 			while (stream.hasNext()) {
 				token = stream.next();
 				if (token != null) {
+					if(token.matches("[0-9]*") || token.matches("[0-9]*\\,[0-9]*")){
+						stream.remove();
+						continue;
+					}
+						
 					token = removeNumbers(token);
 					stream.set(token);
 				}
