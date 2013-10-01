@@ -154,6 +154,12 @@ public class WikipediaParser {
 			if (text.contains("(")) {
 				text = text.replaceAll(" \\(.+\\)", "");
 			}
+			if (text.contains("#")) {
+				text = text.replaceAll("\\[\\[|\\||\\]\\]", "");
+				parsedLink[0] = text;
+				return parsedLink;
+			}
+
 			text = text.replaceAll("\\[\\[|\\]\\]|\\||wikipedia|Wikipedia|\\:",
 					"");
 			parsedLink[0] = text;
@@ -186,16 +192,13 @@ public class WikipediaParser {
 			parsedLink[1] = capitalize(temp);
 			parsedLink[0] = parsedLink[0].replace(",", "");
 			return parsedLink;
-		} 
-		else if(text.contains("File:") ||text.contains("file:") ){
-			if(text.matches("\\[\\[.+\\|.+\\|.+\\]\\]")){
-				Pattern regex = Pattern
-						.compile("\\[\\[.+\\|.+\\|(.+)\\]\\]");
+		} else if (text.contains("File:") || text.contains("file:")) {
+			if (text.matches("\\[\\[.+\\|.+\\|.+\\]\\]")) {
+				Pattern regex = Pattern.compile("\\[\\[.+\\|.+\\|(.+)\\]\\]");
 				Matcher matcher = regex.matcher(text);
 				matcher.find();
 				parsedLink[0] = matcher.group(1);
-			}
-			else if(text.matches("\\[\\[.+\\|.+\\|.+\\|.+\\]\\]")){
+			} else if (text.matches("\\[\\[.+\\|.+\\|.+\\|.+\\]\\]")) {
 				Pattern regex = Pattern
 						.compile("\\[\\[.+\\|.+\\|.+\\|(.+)\\]\\]");
 				Matcher matcher = regex.matcher(text);
@@ -204,7 +207,40 @@ public class WikipediaParser {
 			}
 			return parsedLink;
 		}
-		else if (text.matches("\\[\\[.+\\|.+\\]\\]")) {
+		// [[Category:Character sets]]
+		else if (text.matches("\\[\\[Category:.+\\]\\]")) {
+			Pattern regex = Pattern.compile("\\[\\[Category:(.+)\\]\\]");
+			Matcher matcher = regex.matcher(text);
+			matcher.find();
+			parsedLink[0] = matcher.group(1);
+			return parsedLink;
+		} else if (text.matches("\\[\\[\\:Category:.+\\]\\]")) {
+			Pattern regex = Pattern.compile("\\[\\[\\:(.+)\\]\\]");
+			Matcher matcher = regex.matcher(text);
+			matcher.find();
+			parsedLink[0] = matcher.group(1);
+			return parsedLink;
+		}
+		// [[es:Plancton]]
+		else if (text.matches("\\[\\[..\\:.+\\]\\]")) {
+			Pattern regex = Pattern.compile("\\[\\[(.+)\\]\\]");
+			Matcher matcher = regex.matcher(text);
+			matcher.find();
+			parsedLink[0] = matcher.group(1);
+			return parsedLink;
+		}
+
+		// [http://www.wikipedia.org Wikipedia]
+
+		else if (text.matches("\\[.+\\]") && text.contains("http:")) {
+			if (text.contains(" ")) {
+				Pattern regex = Pattern.compile("\\[(.+) (.+)\\]");
+				Matcher matcher = regex.matcher(text);
+				matcher.find();
+				parsedLink[0] = matcher.group(2);
+			} else
+				return parsedLink;
+		} else if (text.matches("\\[\\[.+\\|.+\\]\\]")) {
 			text = text.replaceAll("\\[\\[|\\]\\]", "");
 			parsedLink = text.split("\\|");
 			text = parsedLink[0];
@@ -212,17 +248,36 @@ public class WikipediaParser {
 			parsedLink[1] = text;
 			return parsedLink;
 
-		} else {
-			Pattern regex = Pattern
-					.compile("\\[\\[(.+?),\\u0020(.+?)\\|\\]\\]");
+		} else if (text.matches(".+\\[\\[.+\\|.+\\]\\]")) {
+			Pattern regex = Pattern.compile("(.+)\\[\\[(.+)\\|(.+)\\]\\]");
 			Matcher matcher = regex.matcher(text);
 			matcher.find();
-			parsedLink[0] = matcher.group(1);
-			StringBuilder str = new StringBuilder(parsedLink[0]);
-			// str.insert(0, "http://en.wikipedia.org/wiki/");
-			parsedLink[1] = str.toString();
+			parsedLink[0] = matcher.group(1) + matcher.group(3);
+			parsedLink[1] = capitalize(matcher.group(2).replaceAll(" ", "_"));
 			return parsedLink;
-		}
 
+		}
+		// San Francisco also has [[public transport]]ation
+
+		// A [[micro-]]<nowiki />second
+		else if (text.matches(".+\\[\\[.+\\]\\]<nowiki.*\\/\\>.+")) {
+			Pattern regex = Pattern
+					.compile("(.+)\\[\\[(.+)\\]\\]<nowiki.*\\/\\>(.+)");
+			Matcher matcher = regex.matcher(text);
+			matcher.find();
+			parsedLink[0] = matcher.group(1) + matcher.group(2)
+					+ matcher.group(3);
+			parsedLink[1] = capitalize(matcher.group(2));
+			return parsedLink;
+		} else if (text.matches(".+\\[\\[.+\\]\\].+")) {
+			Pattern regex = Pattern.compile("(.+)\\[\\[(.+)\\]\\](.+)");
+			Matcher matcher = regex.matcher(text);
+			matcher.find();
+			parsedLink[0] = text.replaceAll("\\[\\[|\\]\\]", "");
+			parsedLink[1] = capitalize(matcher.group(2).replaceAll(" ", "_"));
+			return parsedLink;
+
+		}
+		return parsedLink;
 	}
 }
