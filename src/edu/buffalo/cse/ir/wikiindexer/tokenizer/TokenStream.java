@@ -309,17 +309,23 @@ public class TokenStream implements Iterator<String> {
 	 */
 	public void set(String... newValue) {
 		if (stream == null || newValue == null || newValue[0] == null
-				|| newValue[0].equals("") || stream.size() == 0) {
+				|| newValue[0].equals("") || stream.size() == 0 || !hasNext()) {
 			return;
 		} else {
 			int temppos = position;
 			for (String string : newValue) {
 
-				if (temppos == position) {
-					stream.set(temppos - 1, string);
-					temppos = temppos + 1;
+				if (temppos < stream.size()) {
+					if (temppos == position) {
+						stream.set(temppos, string);
+						temppos++;
+					} else {
+
+						stream.add(temppos, string);
+						temppos = temppos + 1;
+					}
 				} else {
-					stream.add(temppos - 1, string);
+					stream.add(string);
 					temppos = temppos + 1;
 				}
 
