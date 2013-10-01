@@ -97,7 +97,11 @@ public abstract class Dictionary implements Writeable {
 	 */
 	public Collection<String> query(String queryStr) {
 		List<String> s = new ArrayList<String>();
+		if(queryStr.contains("*"))
 		queryStr = queryStr.replaceAll("\\*",".*");
+		if(queryStr.contains(""))
+			queryStr = queryStr.replaceAll("\\?", ".");
+		
 		for (Map.Entry<String, Integer> entry : myMap.entrySet()) {
 			if (entry.getKey().matches(queryStr))
 				s.add(entry.getKey());
