@@ -124,6 +124,7 @@ public class LocalDictionaryTest extends PropertiesBasedTest {
 			
 			//wildcard in the middle
 			assertArrayEquals(new Object[] {"teat","tempest","test"}, getSortedArray(dict.query("te*t")));
+			assertArrayEquals(new Object[] {"teat","test"}, getSortedArray(dict.query("te?t")));
 			
 			dict = null;
 		}
