@@ -19,7 +19,7 @@ public class Partitioner {
 	 */
 	public static int getNumPartitions() {
 		//TODO: Implement this method
-		return -1;
+		return 2;
 	}
 	
 	/**

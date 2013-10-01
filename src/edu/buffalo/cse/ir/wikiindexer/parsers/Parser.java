@@ -5,6 +5,7 @@ package edu.buffalo.cse.ir.wikiindexer.parsers;
 
 import java.io.File;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
 
@@ -18,6 +19,8 @@ import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
 public class Parser {
 	/* */
 	private final Properties props;
+
+	private Collection<WikipediaDocument> docs;
 
 	/**
 	 * 
@@ -47,9 +50,8 @@ public class Parser {
 				PageHandler pageHandler = new PageHandler();
 
 				docs.addAll(pageHandler.fetchDocuments(filename));
-					
 				
-				
+
 				System.out.println("DEBUG: No of entries in xml: "
 						+ docs.size());
 			}
@@ -69,8 +71,8 @@ public class Parser {
 	 * @param documents
 	 *            : The collection of WikipediaDocuments to be added to
 	 */
-	private synchronized void add(WikipediaDocument doc,
+	private synchronized void add(
 			Collection<WikipediaDocument> documents) {
-		documents.add(doc);
+		docs.addAll(documents); 
 	}
 }

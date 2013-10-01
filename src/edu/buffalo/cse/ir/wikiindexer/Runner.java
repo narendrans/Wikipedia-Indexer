@@ -6,16 +6,17 @@ package edu.buffalo.cse.ir.wikiindexer;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.junit.runner.Computer;
 import org.junit.runner.JUnitCore;
@@ -26,6 +27,7 @@ import edu.buffalo.cse.ir.wikiindexer.indexer.IndexerException;
 import edu.buffalo.cse.ir.wikiindexer.indexer.SharedDictionary;
 import edu.buffalo.cse.ir.wikiindexer.parsers.Parser;
 import edu.buffalo.cse.ir.wikiindexer.test.AllTests;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.Tokenizer;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerFactory;
 import edu.buffalo.cse.ir.wikiindexer.wikipedia.DocumentTransformer;
@@ -38,7 +40,9 @@ import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
  * the provided documentation on how to invoke this class.
  */
 public class Runner {
-
+	private static Thread parserThread;
+	private static Thread tokenizerThread;
+	
 	/**
 	 * @param args
 	 */
@@ -103,22 +107,39 @@ public class Runner {
 	 * @param properties: The properties file to run with
 	 */
 	private static void runIndexer(Properties properties) {
-		Parser parser = new Parser(properties);
 		ConcurrentLinkedQueue<WikipediaDocument> queue = new ConcurrentLinkedQueue<WikipediaDocument>();
-		parser.parse(FileUtil.getDumpFileName(properties), queue);
+		ParserRunner prunner = new ParserRunner(properties, queue);
+		parserThread = new Thread(prunner);
+		parserThread.start();
 		
-		synchronized (queue) {
-			while (queue.size() < 10) {
-				//do nothing till we have at least 10 elements
-				//we assume that a lead of 10 will be sufficient
-			}
+		int queuesize = getQueueSize(queue);
+		
+		try {
+				while (queuesize <= 0) {
+					/*
+					 * We just want the first parsing to complete
+					 * After this point, the tokenizer thread will keep looping
+					 * Until we do a health check later and terminate it
+					 */
+					Thread.sleep(1500);
+					queuesize = getQueueSize(queue);
+				}
+		
+			tokenizeAndIndex(properties, queue);
+		} catch (InterruptedException e) {
+			
 		}
-		
-		tokenizeAndIndex(properties, queue);
+	}
+
+	private static int getQueueSize(
+			ConcurrentLinkedQueue<WikipediaDocument> queue) {
+		synchronized (queue) {
+			return queue.size();
+		}
 	}
 
 	private static void tokenizeAndIndex(Properties properties,
-			ConcurrentLinkedQueue<WikipediaDocument> queue) {
+			ConcurrentLinkedQueue<WikipediaDocument> queue) throws InterruptedException {
 		/*
 		 * Pseudo-code:
 		 * 		1. Create a thread executor
@@ -127,17 +148,21 @@ public class Runner {
 		 */
 		ExecutorService threadPool = Executors.newFixedThreadPool(Integer.valueOf(properties.get(IndexerConstants.NUM_TOKENIZER_THREADS).toString()));
 		CompletionService<IndexableDocument> pool = new ExecutorCompletionService<IndexableDocument>(threadPool);
+		ThreadPoolExecutor tpe = (ThreadPoolExecutor) threadPool;
 		
-		WikipediaDocument doc;
-		Map<INDEXFIELD, Tokenizer> tknizerMap;
-		int numDocs = 0;
-		while ((doc = queue.poll()) != null) {
-			tknizerMap = initMap(properties);
-			pool.submit(new DocumentTransformer(tknizerMap, doc));
-			numDocs++;
-		}
 		
-		IndexableDocument idoc;
+		
+		tokenizerThread = new Thread(new TokenizerRunner(queue, pool, properties));
+		tokenizerThread.start();
+		new Thread(new ParserChecker(queue)).start();
+		
+		//give the tokenizer a head start
+		Thread.sleep(2000);
+
+		long completed = 0, totalTasks = tpe.getTaskCount();
+		long remaining = totalTasks - completed;
+		
+		IndexableDocument idoc = null;
 		SharedDictionary docDict = new SharedDictionary(properties, INDEXFIELD.LINK);
 		int currDocId;
 		ThreadedIndexerRunner termRunner = new ThreadedIndexerRunner(properties);
@@ -146,66 +171,81 @@ public class Runner {
 		SingleIndexerRunner linkIdxer = new SingleIndexerRunner(properties, INDEXFIELD.LINK, INDEXFIELD.LINK, docDict, true);
 		Map<String, Integer> tokenmap;
 		
-		for (int i = 0; i < numDocs; i++) {
-			try {
+		try {
+			while (remaining > 0) {
 				idoc = pool.take().get();
-				currDocId = docDict.lookup(idoc.getDocumentIdentifier());
-				
-				try {
-					for (INDEXFIELD fld : INDEXFIELD.values()) {
-						tokenmap = idoc.getStream(fld).getTokenMap();
-						switch (fld) {
-						case TERM:
-							termRunner.addToIndex(tokenmap, currDocId);
-							break;
-						case AUTHOR:
-							authIdxer.processTokenMap(currDocId, tokenmap);
-							break;
-						case CATEGORY:
-							catIdxer.processTokenMap(currDocId, tokenmap);
-							break;
-						case LINK:
-							linkIdxer.processTokenMap(currDocId, tokenmap);
-							break;
+				if (idoc != null) {
+					currDocId = docDict.lookup(idoc.getDocumentIdentifier());
+					TokenStream stream;
+					try {
+						for (INDEXFIELD fld : INDEXFIELD.values()) {
+							stream = idoc.getStream(fld);
+
+							if (stream != null) {
+								tokenmap = stream.getTokenMap();
+
+								if (tokenmap != null) {
+									switch (fld) {
+									case TERM:
+										termRunner.addToIndex(tokenmap,
+												currDocId);
+										break;
+									case AUTHOR:
+										authIdxer.processTokenMap(
+												currDocId, tokenmap);
+										break;
+									case CATEGORY:
+										catIdxer.processTokenMap(currDocId,
+												tokenmap);
+										break;
+									case LINK:
+										linkIdxer.processTokenMap(
+												currDocId, tokenmap);
+										break;
+									}
+								}
+							}
+
 						}
+					} catch (IndexerException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				} catch (IndexerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 				
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
+				completed++;
+				
+				if (tokenizerThread.isAlive())
+					totalTasks = tpe.getTaskCount();
+				
+				remaining = totalTasks - completed;
+			}
+		} catch (ExecutionException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-		
+
 		try {
 			termRunner.cleanup();
 			authIdxer.cleanup();
 			catIdxer.cleanup();
 			linkIdxer.cleanup();
+			docDict.writeToDisk();
+			docDict.cleanUp();
 		} catch (IndexerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		
+		while (termRunner.isFinished() && authIdxer.isFinished() && catIdxer.isFinished() && linkIdxer.isFinished()) {
+			//do nothing
+			Thread.sleep(1000);
 		}
 		
 		threadPool.shutdown();
 		
 	}
 
-	private static Map<INDEXFIELD, Tokenizer> initMap(Properties props) {
-		HashMap<INDEXFIELD, Tokenizer> map = new HashMap<INDEXFIELD, Tokenizer>(INDEXFIELD.values().length);
-		TokenizerFactory fact = TokenizerFactory.getInstance(props);
-		for (INDEXFIELD fld : INDEXFIELD.values()) {
-			map.put(fld, fact.getTokenizer(fld));
-		}
-		
-		return map;
-	}
 
 	/**
 	 * Method to execute all tests
@@ -276,6 +316,100 @@ public class Runner {
 		}
 		
 		return false;
+	}
+	
+	private static class ParserRunner implements Runnable {
+		private Properties idxProps;
+		private Collection<WikipediaDocument> coll;
+		private Parser parser;
+		
+		
+		private ParserRunner(Properties props, Collection<WikipediaDocument> collection) {
+			this.idxProps = props;
+			this.coll = collection;
+			 parser = new Parser(props);
+		}
+		
+		public void run() {
+			parser.parse(FileUtil.getDumpFileName(idxProps), coll);
+		}
+		
+	}
+	
+	private static class TokenizerRunner implements Runnable {
+		private ConcurrentLinkedQueue<WikipediaDocument> queue;
+		private CompletionService<IndexableDocument> pool;
+		private Properties properties;
+		private long sleepTime = 1500;
+		private int numTries = 0;
+		
+		private TokenizerRunner(ConcurrentLinkedQueue<WikipediaDocument> queue, CompletionService<IndexableDocument> pool, Properties properties) {
+			this.queue = queue;
+			this.pool = pool;
+			this.properties = properties;
+		}
+		
+		public void run() {
+			WikipediaDocument doc;
+			Map<INDEXFIELD, Tokenizer> tknizerMap;
+			while (!Thread.interrupted()) {
+				doc = queue.poll();
+				
+				if (doc == null) {
+					try {
+						numTries++;
+						if (numTries > 5) {
+							sleepTime *= 2;
+							numTries = 0;
+						}
+						
+						Thread.sleep(sleepTime);
+					} catch (InterruptedException e) {
+						
+					}
+				} else {
+					if (numTries > 0)
+						numTries--;
+					
+					tknizerMap = initMap(properties);
+					pool.submit(new DocumentTransformer(tknizerMap, doc));
+				}
+			}
+			
+		}
+		
+		private static Map<INDEXFIELD, Tokenizer> initMap(Properties props) {
+			HashMap<INDEXFIELD, Tokenizer> map = new HashMap<INDEXFIELD, Tokenizer>(INDEXFIELD.values().length);
+			TokenizerFactory fact = TokenizerFactory.getInstance(props);
+			for (INDEXFIELD fld : INDEXFIELD.values()) {
+				map.put(fld, fact.getTokenizer(fld));
+			}
+			
+			return map;
+		}
+		
+	}
+	
+	private static class ParserChecker implements Runnable {
+		private ConcurrentLinkedQueue<WikipediaDocument> queue;
+		private ParserChecker(ConcurrentLinkedQueue<WikipediaDocument> queue) {
+			this.queue = queue;
+		}
+		
+		public void run() {
+			if (!parserThread.isAlive() && getQueueSize(queue) == 0) {
+				tokenizerThread.interrupt();
+			} else {
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		}
+		
 	}
 
 }

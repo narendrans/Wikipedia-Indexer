@@ -102,11 +102,7 @@ public class WikipediaParser {
 		text = text.replaceAll("&lt;([^.]*?)&gt;", "");
 		text = text.replace("  ", " ");
 
-		if (text.startsWith(" "))
-			text = text.replaceFirst(" ", "");
-
-		if (text.endsWith(" "))
-			text = text.substring(0, text.length() - 1);
+		text = text.trim();
 		return text;
 
 	}
@@ -139,6 +135,10 @@ public class WikipediaParser {
 	 *         the parsed text as visible to the user on the page The 1st
 	 *         element is the link url
 	 */
+	private static String capitalize(String line) {
+		return Character.toUpperCase(line.charAt(0)) + line.substring(1);
+	}
+
 	public static String[] parseLinks(String text) {
 
 		String[] parsedLink = new String[2];
@@ -146,38 +146,80 @@ public class WikipediaParser {
 		parsedLink[1] = "";
 		if (text == null || text.isEmpty())
 			return parsedLink;
+		// [[Texas|Lone Star State]]
 
-		if (text.contains("(")) {
-			text = text.replaceAll(" \\(.+\\)\\|", "");
-			Pattern regex = Pattern.compile("\\[\\[(.+?)\\]\\]");
-			Matcher matcher = regex.matcher(text);
-			matcher.find();
-			parsedLink[0] = matcher.group(1);
-			StringBuilder str = new StringBuilder(parsedLink[0]);
-		//	str.insert(0, "http://en.wikipedia.org/wiki/");
-			parsedLink[1] = str.toString();
+		// [[Wikipedia:Village pump|]]
+		if (text.contains("wikipedia:") || text.contains("Wikipedia:")) {
+
+			if (text.contains("(")) {
+				text = text.replaceAll(" \\(.+\\)", "");
+			}
+			text = text.replaceAll("\\[\\[|\\]\\]|\\||wikipedia|Wikipedia|\\:",
+					"");
+			parsedLink[0] = text;
 			return parsedLink;
 
-		} else if (text.contains("Wikipedia")) {
-			text = text.replaceAll(" ", "_");
-			Pattern regex = Pattern.compile("\\[\\[(.+?)\\|\\]\\]");
-			Matcher matcher = regex.matcher(text);
-			matcher.find();
-			parsedLink[0] = matcher.group(1);
-			StringBuilder str = new StringBuilder(parsedLink[0]);
-		//	str.insert(0, "http://en.wikipedia.org/wiki/");
-			parsedLink[1] = str.toString();
+		}
+		// [[Wiktionary:Hello]]
+		else if (text.contains("wiktionary") || text.contains("Wiktionary")) {
+
+			if (text.contains("(")) {
+				text = text.replaceAll(" \\(.+\\)", "");
+			}
+			text = text.replaceAll("\\[\\[|\\]\\]|\\|", "");
+			if (text.matches(".+\\:.+\\:.+"))
+				text = text.replace("Wiktionary:", "");
+			parsedLink[0] = text;
 			return parsedLink;
 		}
+		// [[media:Classical guitar scale.ogg|Sound]]"
+		else if (text.contains("media:")) {
+			text = text.replaceAll("\\[\\[|\\]\\]", "");
+			parsedLink[0] = text.replaceAll(".+\\|", "");
+			return parsedLink;
+		}
+		// [[kingdom (biology)|]]
+		else if (text.matches("\\[\\[.+\\|\\]\\]")) {
+			text = text.replaceAll("\\[\\[|\\]\\]|\\|", "");
+			String temp = text.replaceAll(" ", "_");
+			parsedLink = temp.split("_");
+			parsedLink[1] = capitalize(temp);
+			parsedLink[0] = parsedLink[0].replace(",", "");
+			return parsedLink;
+		} 
+		else if(text.contains("File:") ||text.contains("file:") ){
+			if(text.matches("\\[\\[.+\\|.+\\|.+\\]\\]")){
+				Pattern regex = Pattern
+						.compile("\\[\\[.+\\|.+\\|(.+)\\]\\]");
+				Matcher matcher = regex.matcher(text);
+				matcher.find();
+				parsedLink[0] = matcher.group(1);
+			}
+			else if(text.matches("\\[\\[.+\\|.+\\|.+\\|.+\\]\\]")){
+				Pattern regex = Pattern
+						.compile("\\[\\[.+\\|.+\\|.+\\|(.+)\\]\\]");
+				Matcher matcher = regex.matcher(text);
+				matcher.find();
+				parsedLink[0] = matcher.group(1);
+			}
+			return parsedLink;
+		}
+		else if (text.matches("\\[\\[.+\\|.+\\]\\]")) {
+			text = text.replaceAll("\\[\\[|\\]\\]", "");
+			parsedLink = text.split("\\|");
+			text = parsedLink[0];
+			parsedLink[0] = parsedLink[1];
+			parsedLink[1] = text;
+			return parsedLink;
 
-		else {
+		} else {
 			Pattern regex = Pattern
 					.compile("\\[\\[(.+?),\\u0020(.+?)\\|\\]\\]");
 			Matcher matcher = regex.matcher(text);
 			matcher.find();
 			parsedLink[0] = matcher.group(1);
 			StringBuilder str = new StringBuilder(parsedLink[0]);
-		//	str.insert(0, "http://en.wikipedia.org/wiki/");
+			// str.insert(0, "http://en.wikipedia.org/wiki/");
 			parsedLink[1] = str.toString();
 			return parsedLink;
 		}

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +23,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
+import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaParser;
 
 public class PageHandler extends DefaultHandler {
 	boolean currentElement = false;
@@ -33,10 +35,13 @@ public class PageHandler extends DefaultHandler {
 	private String pageText;
 	private final Stack<String> tagsStack = new Stack<String>();
 
+	private String text;
+
 	private void parseDocument() {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		try {
 			SAXParser parser = factory.newSAXParser();
+
 			parser.parse(inputXmlFileName, this);
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
@@ -60,32 +65,68 @@ public class PageHandler extends DefaultHandler {
 
 			parseDocument();
 			for (Page pages : listOfPages) {
-				/*
-				 * System.out.println("------START OF PAGE-----");
-				 * System.out.println("Page ID: " + pages.getId());
-				 * System.out.println("Page Title: " + pages.getTitle());
-				 * System.out.println("Page Time Stamp: " +
-				 * pages.getTimeStamp()); System.out.println("Page Author: " +
-				 * pages.getUserName()); System.out.println("Page Comment: " +
-				 * pages.getText());
-				 * System.out.println("------END OF PAGE-----");
-				 */
+
 				WikipediaDocument doc = new WikipediaDocument(
 						Integer.parseInt(pages.getId()), pages.getTimeStamp(),
 						pages.getUserName(), pages.getTitle());
 
 				if (pages.getText() != null) {
 					pageText = pages.getText();
-					pageTitle = pages.getTitle();
+
+					// Adding all the categories of the current page
 					doc.addCategoriesP(getCategories(pageText));
-					doc.addSectionP(pageTitle, pageText);
-					//System.out.println(pageTitle);
+
+					// Add all sections in the page
+					List<LocalSection> ls = getSections(pageText);
+					for (LocalSection localSection : ls) {
+						doc.addSectionP(localSection.getTitle(),
+								localSection.getText());
+					}
+
+					// Parse the contents of text
+
 				}
 				docs.add(doc);
+
 			}
+
 			return docs;
 		}
-		// System.out.println(listOfPages.get(0).getTitle());
+	}
+
+	public List<LocalSection> getSections(String input) {
+		List<LocalSection> lsList = new ArrayList<LocalSection>();
+
+		List<String> titles = new ArrayList<String>();
+		titles.add("Default");
+		Pattern pattern = Pattern.compile(".*==+(.+)==+.*");
+
+		Matcher matcher = pattern.matcher(input);
+		while (matcher.find()) {
+			titles.add(matcher.group(1).replaceAll("=", ""));
+		}
+
+		String[] sections = input.split("==+.+==+");
+
+		for (int i = 0; i < titles.size(); i++) {
+
+			LocalSection ls = new LocalSection(titles.get(i), sections[i]);
+			lsList.add(ls);
+		}
+
+		// String text = WikipediaParser.parseTagFormatting(sections[1]);
+		// remove all references
+		// String text = sections[1].replaceAll("\\<ref.+\\/ref\\>", "");
+		// text = text.replaceAll("\\<ref.+\\/\\>", "");
+		// remove all citations
+		// text = text.replaceAll("\\{\\{.+\\}\\}", "");
+		// remove all special characters
+		// text = text.replaceAll("[^\\w\\s]+", " ");
+		// text = text.replaceAll("''+", "");
+		// text = text.replaceAll("\\s+", " ");
+		// text = text.trim();
+		// System.out.println(text);
+		return lsList;
 	}
 
 	public Collection<String> getCategories(String input) {
@@ -162,11 +203,12 @@ public class PageHandler extends DefaultHandler {
 	}
 
 	public static void main(String[] args) throws ParseException {
-		long startTime = System.currentTimeMillis();
-		// new PageHandler("/Users/naren/Documents/ir/WikiDump_1600.xml");
-		long endTime = System.currentTimeMillis();
-		long totalTime = endTime - startTime;
-		System.out.println(totalTime);
+		// long startTime = System.currentTimeMillis();
+		PageHandler hl = new PageHandler();
+		hl.fetchDocuments("/Users/naren/git/UB_IR/files/five_entries.xml");
+		// long endTime = System.currentTimeMillis();
+		// long totalTime = endTime - startTime;
+		// System.out.println(totalTime);
 		// Collaborative_Editing.xml ~50 ms
 		// WikiDump_1600.xml ~800
 	}

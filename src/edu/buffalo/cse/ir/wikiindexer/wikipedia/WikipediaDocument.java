@@ -94,9 +94,9 @@ public class WikipediaDocument {
 	protected void addSection(String title, String text) {
 		sections.add(new Section(title, text));
 	}
-	
-	public void addSectionP(String title,String text){
-		sections.add(new Section(title,text));
+
+	public void addSectionP(String title, String text) {
+		sections.add(new Section(title, text));
 	}
 
 	/**
@@ -233,6 +233,10 @@ public class WikipediaDocument {
 		private String title;
 		private String text;
 
+		public Section() {
+			// TODO Auto-generated constructor stub
+		}
+
 		/**
 		 * Default constructor. Please do not change visibility of the method.
 		 * 
@@ -251,6 +255,14 @@ public class WikipediaDocument {
 		 */
 		public String getTitle() {
 			return title;
+		}
+
+		public void setTitle(String title) {
+			this.title = title;
+		}
+
+		public void setText(String text) {
+			this.text = text;
 		}
 
 		/**

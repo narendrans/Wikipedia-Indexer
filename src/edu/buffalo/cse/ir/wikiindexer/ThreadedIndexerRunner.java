@@ -24,10 +24,12 @@ public class ThreadedIndexerRunner {
 	protected ThreadedIndexerRunner(Properties idxProps) {
 		this.props = idxProps;
 		int numParts = Partitioner.getNumPartitions();
-
-		rthreads = new RunnerThread[numParts];
-		for (int i = 0; i < numParts; i++) {
-			rthreads[i] = new RunnerThread(i);
+		
+		if (numParts > 0) {
+			rthreads = new RunnerThread[numParts];
+			for (int i = 0; i < numParts; i++) {
+				rthreads[i] = new RunnerThread(i);
+			}
 		}
 	}
 
@@ -40,13 +42,19 @@ public class ThreadedIndexerRunner {
 		for (Entry<String, Integer> etr : tokenmap.entrySet()) {
 			term = etr.getKey();
 			numOccur = etr.getValue();
-			numPart = Partitioner.getPartitionNumber(term);
-			tidx = new TermIndexEntry(term, docid, numOccur);
-			currThread = rthreads[numPart];
-			currThread.pvtQueue.add(tidx);
-			if (!currThread.isRunning) {
-				currThread.isRunning = true;
-				new Thread(currThread).start();
+			
+			if (term != null && numOccur > 0) {
+				numPart = Partitioner.getPartitionNumber(term);
+				
+				if (numPart >= 0 && numPart < rthreads.length) {
+					tidx = new TermIndexEntry(term, docid, numOccur);
+					currThread = rthreads[numPart];
+					currThread.pvtQueue.add(tidx);
+					if (!currThread.isRunning) {
+						currThread.isRunning = true;
+						new Thread(currThread).start();
+					}
+				}
 			}
 		}
 	}
@@ -55,6 +63,16 @@ public class ThreadedIndexerRunner {
 		for (RunnerThread thr : rthreads) {
 			thr.setComplete();
 		}
+	}
+	
+	protected boolean isFinished() {
+		boolean flag = true;
+		
+		for (RunnerThread thr : rthreads) {
+			flag &= (thr.isComplete && thr.isQueueEmpty());
+		}
+		
+		return flag;
 	}
 
 	private class TermIndexEntry {
@@ -83,6 +101,12 @@ public class ThreadedIndexerRunner {
 
 		private void setComplete() {
 			isComplete = true;
+		}
+		
+		private boolean isQueueEmpty() {
+			synchronized (pvtQueue) {
+				return pvtQueue.isEmpty();
+			}
 		}
 
 		public void run() {
