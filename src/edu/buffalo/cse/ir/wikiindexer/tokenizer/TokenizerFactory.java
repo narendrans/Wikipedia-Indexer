@@ -64,12 +64,11 @@ public class TokenizerFactory {
 		 */
 		try {
 			if (field == INDEXFIELD.TERM)
-				return new Tokenizer(new WhiteSpaceRule(),
-						new PunctuationRule());
+				return new Tokenizer(new WhiteSpaceRule());
 			if (field == INDEXFIELD.CATEGORY)
 				return new Tokenizer(new WhiteSpaceRule());
 			if (field == INDEXFIELD.AUTHOR)
-				return new Tokenizer(new WhiteSpaceRule());
+				return new Tokenizer();
 			if (field == INDEXFIELD.LINK)
 				return new Tokenizer(new WhiteSpaceRule());
 		} catch (Exception e) {

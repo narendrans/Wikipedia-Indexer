@@ -3,9 +3,9 @@
  */
 package edu.buffalo.cse.ir.wikiindexer.wikipedia;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.buffalo.cse.ir.wikiindexer.indexer.INDEXFIELD;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
@@ -51,22 +51,39 @@ public class IndexableDocument {
 	 */
 	public TokenStream getStream(INDEXFIELD key) {
 		tknizerMap = docTrans.getTokenMap();
-		List<Section> s = docTrans.getDocument().getSections();
-		//System.out.println("Sections written to disk: "+s.size());
-		StringBuffer buf = new StringBuffer();
-		for (Section section : s) {
-			buf.append(section.getText());
-		}
+
 		switch (key) {
-		case TERM:
+		case AUTHOR: {
 			return new TokenStream(docTrans.getDocument().getAuthor());
-		case AUTHOR:
-			return new TokenStream(buf.toString());
-		default:
-			break;
+		}
+		case TERM: {
+			List<Section> s = docTrans.getDocument().getSections();
+
+			StringBuilder builder = new StringBuilder();
+			for (Section section : s) {
+				builder.append(section.getTitle() + section.getText());
+			}
+			return new TokenStream(builder.toString());
+		}
+		case CATEGORY: {
+			List<String> cat = docTrans.getDocument().getCategories();
+
+			StringBuilder builder = new StringBuilder();
+			for (String string : cat) {
+				builder.append(string + " ");
+			}
+			return new TokenStream(builder.toString());
+		}
+		case LINK: {
+			Set<String> links = docTrans.getDocument().getLinks();
+			StringBuilder builder = new StringBuilder();
+			for (String string : links) {
+				builder.append(string + " ");
+			}
+			return new TokenStream(builder.toString());
+		}
 
 		}
-		// TODO: Implement this method
 		return null;
 	}
 

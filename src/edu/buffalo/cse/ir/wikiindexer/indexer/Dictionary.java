@@ -55,6 +55,7 @@ public abstract class Dictionary implements Writeable {
 	 * @see edu.buffalo.cse.ir.wikiindexer.indexer.Writeable#writeToDisk()
 	 */
 	public void writeToDisk() throws IndexerException {
+		System.out.println("inside dictionary write method");
 		// TODO Implement this method
 
 	}

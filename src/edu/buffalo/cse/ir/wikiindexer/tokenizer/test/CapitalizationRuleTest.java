@@ -22,7 +22,7 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
 public class CapitalizationRuleTest extends TokenizerRuleTest {
 
 	public CapitalizationRuleTest(Properties props) {
-		super(props, IndexerConstants.CAPITALIZATIONRULE);
+		super(props);
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class CapitalizationRuleTest extends TokenizerRuleTest {
 							runtest("This", "is", "a", "test."));
 					assertArrayEquals(new Object[] { "san", "Francisco", "is",
 							"in", "California." },
-							runtest("San", "Francisco", "is", "in", "California."));
+						runtest("San", "Francisco", "is", "in", "California."));
 					assertArrayEquals(
 							new Object[] { "some", "bodily", "fluids,", "such",
 									"as", "saliva", "and", "tears,", "do", "not",

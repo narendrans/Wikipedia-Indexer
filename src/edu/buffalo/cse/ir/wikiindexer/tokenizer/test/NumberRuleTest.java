@@ -22,7 +22,7 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
 public class NumberRuleTest extends TokenizerRuleTest {
 
 	public NumberRuleTest(Properties props) {
-		super(props, IndexerConstants.NUMBERSRULE);
+		super(props);
 	}
 
 	@Test

@@ -116,7 +116,7 @@ public class LocalDictionaryTest extends PropertiesBasedTest {
 			//no match for a given exact match
 			assertNull(dict.query("doom"));
 			
-			//wildcard at start
+			//wildcard at start	
 			assertArrayEquals(new Object[] {"best","crest","tempest","test","zest"}, getSortedArray(dict.query("*est")));
 			
 			//wildcard at end

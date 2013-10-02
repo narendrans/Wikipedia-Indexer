@@ -21,7 +21,18 @@ public class IndexWriter implements Writeable {
 
 	SObject obj;
 	ObjectOutputStream oos;
-	static List<SObject> objList = new ArrayList<SObject>();
+
+	static List<SObject> authorList = new ArrayList<SObject>();
+	static List<SObject> termList = new ArrayList<SObject>();
+	static List<SObject> categoryList = new ArrayList<SObject>();
+	static List<SObject> linkList = new ArrayList<SObject>();
+
+	private final String authorIndex = "/Users/naren/folder/author(compressed).txt";
+	private final String termIndex = "/Users/naren/folder/term(compressed).txt";
+	private final String categoryIndex = "/Users/naren/folder/category(compressed).txt";
+	private final String linkIndex = "/Users/naren/folder/link(compressed).txt";
+
+	private INDEXFIELD field;
 
 	/**
 	 * Constructor that assumes the underlying index is inverted Every index
@@ -40,7 +51,8 @@ public class IndexWriter implements Writeable {
 	 */
 	public IndexWriter(Properties props, INDEXFIELD keyField,
 			INDEXFIELD valueField) {
-
+		this.field = keyField;
+		System.out.println(keyField);
 	}
 
 	/**
@@ -63,6 +75,8 @@ public class IndexWriter implements Writeable {
 	 */
 	public IndexWriter(Properties props, INDEXFIELD keyField,
 			INDEXFIELD valueField, boolean isForward) {
+System.out.println(keyField);
+		this.field = keyField;
 	}
 
 	/**
@@ -92,6 +106,7 @@ public class IndexWriter implements Writeable {
 	public void addToIndex(int keyId, int valueId, int numOccurances)
 			throws IndexerException {
 		System.out.println("inside add to index 1");
+
 		// TODO: Implement this method
 	}
 
@@ -110,7 +125,7 @@ public class IndexWriter implements Writeable {
 	 */
 	public void addToIndex(int keyId, String value, int numOccurances)
 			throws IndexerException {
-System.out.println("inside add to index 2");
+		System.out.println("inside add to index 2");
 	}
 
 	/**
@@ -128,12 +143,39 @@ System.out.println("inside add to index 2");
 	 */
 	public void addToIndex(String key, int valueId, int numOccurances)
 			throws IndexerException {
-		SObject obj = new SObject();
-		obj.setKeyId(key);
-		obj.setOccurences(numOccurances);
-		obj.setValue(valueId);
+		switch (this.field) {
+		case TERM: {
+			SObject obj = new SObject();
+			obj.setKeyId(key);
+			obj.setOccurences(numOccurances);
+			obj.setValue(valueId);
 
-		objList.add(obj);
+			termList.add(obj);
+			break;
+		}
+		case AUTHOR: {
+			SObject obj = new SObject();
+			obj.setKeyId(key);
+			obj.setOccurences(numOccurances);
+			obj.setValue(valueId);
+
+			authorList.add(obj);
+			break;
+		}
+		case CATEGORY: {
+			SObject obj = new SObject();
+			obj.setKeyId(key);
+			obj.setOccurences(numOccurances);
+			obj.setValue(valueId);
+
+			categoryList.add(obj);
+			break;
+		}
+		case LINK:
+			// System.out.println("case link");
+			break;
+		}
+
 	}
 
 	/**
@@ -160,21 +202,28 @@ System.out.println("inside add to index 2");
 	 * @see edu.buffalo.cse.ir.wikiindexer.indexer.Writeable#writeToDisk()
 	 */
 	public void writeToDisk() throws IndexerException {
-		System.out.println("inside write to disk");
-		System.out.println(objList.size());
-		String fileName = "/Users/naren/folder/data(Compressed).txt";
 		try {
-			ObjectOutputStream oos = new ObjectOutputStream(new DeflaterOutputStream(
-					new FileOutputStream(fileName)));
-			oos.writeObject(objList);
+			ObjectOutputStream oos = new ObjectOutputStream(
+					new DeflaterOutputStream(new FileOutputStream(authorIndex)));
+			oos.writeObject(authorList);
 			oos.close();
-			ObjectInputStream is = new ObjectInputStream(
-					new InflaterInputStream(new FileInputStream(fileName)));
-			
-			List<SObject> mylist = (List<SObject>) is.readObject();
-			
-			System.out.println(mylist.size());
-			
+
+			ObjectOutputStream oos1 = new ObjectOutputStream(
+					new DeflaterOutputStream(new FileOutputStream(termIndex)));
+			oos1.writeObject(termList);
+			oos1.close();
+
+			ObjectOutputStream oos2 = new ObjectOutputStream(
+					new DeflaterOutputStream(
+							new FileOutputStream(categoryIndex)));
+			oos2.writeObject(categoryList);
+			oos2.close();
+
+			ObjectOutputStream oos3 = new ObjectOutputStream(
+					new DeflaterOutputStream(new FileOutputStream(linkIndex)));
+			oos3.writeObject(linkList);
+			oos3.close();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
