@@ -2,6 +2,8 @@ package edu.buffalo.cse.ir.wikiindexer.tokenizer.rules;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
@@ -16,9 +18,45 @@ public class StopWordsRule implements TokenizerRule {
 
 	// Local test mainF
 	public static void main(String[] args) {
-		System.out.println(isStopWord("above"));
-		System.out.println(isStopWord("english"));
-		System.out.println(isStopWord("ask"));
+		System.out
+				.println(removeStopWords("this. is. above do not what? do this. got it? is? all do do not do this above is is is english is is is stopwords hoho all aalk englis is"));
+		System.out
+				.println(removeStopWords("a asd asdas alps do not do is. this."));
+		System.out.println(removeStopWords("is is is am all and."));
+		System.out.println(removeStopWords("english"));
+		System.out.println(removeStopWords("ask"));
+
+	}
+
+	public static String removeStopWords(String text) {
+
+		String[] splitText = text.split("\\s+");
+		if (isStopWord(splitText[splitText.length - 1])) {
+			text = text.replaceAll(" [^ ]+$", "");
+		}
+		boolean fullOfStopWords = true;
+		for (String str : splitText) {
+			str = str.replaceAll("[.!?]", "");
+			if (isStopWord(str)) {
+				text = text.replaceAll("\\b" + str + "\\b", "");
+			} else
+				fullOfStopWords = false;
+		}
+		if (fullOfStopWords == true) {
+			text = "";
+			return text;
+		}
+		text = text.replaceAll("\\s+", " ");
+		text = text.trim();
+
+		/*
+		 * if (isStopWord(text)) { //text = regChecker("[\\s+[a-zA-Z]+\\s+",
+		 * text, "'s", ""); for (int i = -1; (i = text.indexOf(text, i + 1)) !=
+		 * -1;) { char tempChar = text.charAt(i - 1); if (tempChar == ' ')
+		 * 
+		 * return text; } }
+		 */
+		return text;
 	}
 
 	private static boolean isStopWord(String word) {
@@ -32,14 +70,16 @@ public class StopWordsRule implements TokenizerRule {
 			while (stream.hasNext()) {
 				token = stream.next();
 				if (token != null) {
-					if (isStopWord(token)) {
+					token = removeStopWords(token);
+					if (token.isEmpty())
 						stream.remove();
-					}
+					else
+						stream.set(token);
+					stream.set(token.split(" "));
 				}
 			}
-			stream.reset();
 		}
-
+		stream.reset();
 	}
 
 }
