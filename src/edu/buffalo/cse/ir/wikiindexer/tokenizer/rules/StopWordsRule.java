@@ -75,6 +75,7 @@ public class StopWordsRule implements TokenizerRule {
 						stream.remove();
 					else
 						stream.set(token);
+					stream.set(token.split(" "));
 				}
 			}
 		}
