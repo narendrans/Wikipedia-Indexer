@@ -13,6 +13,7 @@ public class WhiteSpaceRule implements TokenizerRule {
 		String[] x = sb.split(" ");
 		return x;
 	}
+
 	public static void main(String[] args) {
 		String[] test = removeWhiteSpace("this is a test");
 		for (String string : test) {
@@ -22,6 +23,7 @@ public class WhiteSpaceRule implements TokenizerRule {
 
 	@Override
 	public void apply(TokenStream stream) throws TokenizerException {
+		System.out.println("inside whitespace rule");
 		if (stream != null) {
 			String[] token;
 			String actual = "";
@@ -29,15 +31,15 @@ public class WhiteSpaceRule implements TokenizerRule {
 				actual = stream.next();
 				if (actual != null) {
 					token = removeWhiteSpace(actual);
-					for (String string : token) {
-					//	System.out.println(string);
-					}
+					stream.previous();
 					stream.set(token);
-					System.out.println(stream.getAllTokens().size());
-					
+					stream.next();
+					// System.out.println(stream.getAllTokens().size());
+
 				}
 			}
 		}
-		stream.reset();}
+		stream.reset();
+	}
 
 }
