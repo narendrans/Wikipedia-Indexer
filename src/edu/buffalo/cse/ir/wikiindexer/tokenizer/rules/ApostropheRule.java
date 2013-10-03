@@ -39,7 +39,7 @@ public class ApostropheRule implements TokenizerRule {
 	}
 	
 	public static String removeApostrophe(String text) {
-		
+		text = text.replaceAll("'em", "them");
 		text = regChecker("[a-zA-Z]{2,4}'re", text, "'re", " are");
 		text = regChecker("[a-zA-Z]{1,4}'ll", text, "'ll", " will");
 		text = regChecker("[a-zA-Z]{1,6}'ve", text, "'ve", " have");
@@ -53,7 +53,7 @@ public class ApostropheRule implements TokenizerRule {
 		text = regChecker("[a-zA-Z]{3}'em", text, "'em", " them");
 		text = regChecker("[\\w+'\\w+]|[\\s+'\\w+]|\\w+'\\s+]", text, "'", "");
 		text = regChecker("[\\w+'[s]{1,2}]", text, "'s", "");
-		
+	
 		return text;
 	}
 	
@@ -67,11 +67,13 @@ public class ApostropheRule implements TokenizerRule {
 			String token;
 			while (stream.hasNext()) {
 				token = stream.next();
+				stream.previous();
 				if (token != null) {
 					token = removeApostrophe(token);
 					
 					// isn't -> token = is not, so that output is is, not// if noun 
 					 stream.set(token.split(" "));
+					 stream.next();
 				}
 			}
 		}
