@@ -13,7 +13,16 @@ public class SpecialCharsRule implements TokenizerRule {
 	}
 
 	private static String removeSpecialChars(String input) {
+
 		return input.replaceAll("[^\\p{L}\\p{Nd}]", "");
+	}
+
+	private static String[] removeChars(String input) {
+		String[] x = { "", "" };
+		if (input.matches(".+\\@.+\\..+"))
+			return input.split("@");
+		else
+			return x;
 	}
 
 	@Override
@@ -22,23 +31,59 @@ public class SpecialCharsRule implements TokenizerRule {
 			String token;
 			while (stream.hasNext()) {
 				token = stream.next();
+				stream.previous();
 				if (token != null) {
-					token = removeSpecialChars(token);
-					if (token.equals("")) {
-						stream.remove();
+					if (token.matches(".+\\@.+")) {
+						stream.set(removeChars(token));
+						stream.next();
+						continue;
+					} else if (token.matches("\\#[0-9]*\\-[0-9]*")) {
+						stream.set(token.replaceAll("#", ""));
+						stream.next();
+						continue;
+					} 
+					else if(token.matches("\\$.+")){
+						stream.set(token.replaceAll("\\$", ""));
+						stream.next();
 						continue;
 					}
-					if (token.contains("[a-zA-Z]\\*[a-zA-Z]")
-							|| token.contains("[a-zA-Z]\\^[a-zA-Z]")) {
-						String[] arr = token.split("\\+|\\-\\*");
-						stream.set(arr);
+					else if(token.contains("\\%")){
+						stream.set(token.replaceAll("\\%", ""));
+						stream.next();
 						continue;
 					}
-					stream.set(token);
-				}
-			}
-		}
-		stream.reset();
-	}
+					else if(token.matches(".\\*.")){
+						stream.set(token.split("\\*"));
+						stream.next();
+						continue;
+					}
+					else if(token.matches(".\\^.")){
+						stream.set(token.split("\\^"));
+						stream.next();
+						continue;
+					}
+					else if(token.matches("\\-.+"))
+					{
+						stream.set(token);
+						stream.next();
+						continue;
+					}
+					else {
+						token = removeSpecialChars(token);
+						if (token.equals(""))
+							stream.remove();
+						else {
+							stream.set(removeSpecialChars(token));
+							stream.next();
+							continue;
+						}
 
+					}
+				}
+				stream.reset();
+
+			}
+
+		}
+	}
 }
