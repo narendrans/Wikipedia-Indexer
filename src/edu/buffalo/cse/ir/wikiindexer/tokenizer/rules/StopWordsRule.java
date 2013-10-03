@@ -67,15 +67,19 @@ public class StopWordsRule implements TokenizerRule {
 	public void apply(TokenStream stream) throws TokenizerException {
 		if (stream != null) {
 			String token;
-			while (stream.hasNext()) {
+			int size = stream.getAllTokens().size();
+			for (int i = 0; i < size; i++) {
 				token = stream.next();
+				stream.previous();
 				if (token != null) {
 					token = removeStopWords(token);
 					if (token.isEmpty())
 						stream.remove();
-					else
+					else {
 						stream.set(token);
-					stream.set(token.split(" "));
+						stream.next();
+					}
+					// stream.next();
 				}
 			}
 		}
