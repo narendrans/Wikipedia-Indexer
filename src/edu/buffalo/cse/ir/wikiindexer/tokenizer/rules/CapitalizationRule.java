@@ -70,9 +70,11 @@ public class CapitalizationRule implements TokenizerRule {
 			String token;
 			while (stream.hasNext()) {
 				token = stream.next();
+				stream.previous();
 				if (token != null) {
 					token = lowercaseCapital(token);
 					stream.set(token);
+					stream.next();
 				}
 			}
 		}
