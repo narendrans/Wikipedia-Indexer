@@ -48,9 +48,11 @@ public class PunctuationRule implements TokenizerRule {
 			String token;
 			while (stream.hasNext()) {
 				token = stream.next();
+				stream.previous();
 				if (token != null) {
 					token = removePunctuation(token);
 					stream.set(token);
+					stream.next();
 				}
 			}
 		}
