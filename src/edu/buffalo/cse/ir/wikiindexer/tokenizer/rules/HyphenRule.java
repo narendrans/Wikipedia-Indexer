@@ -33,6 +33,7 @@ public class HyphenRule implements TokenizerRule {
 			while (stream.hasNext()) {
 				token = stream.next();
 				token = token.trim();
+				stream.previous();
 				if (token.matches("\\-+")) {
 					stream.remove();
 					continue;
@@ -40,6 +41,7 @@ public class HyphenRule implements TokenizerRule {
 				if (token != null) {
 					token = removeHyphen(token);
 					stream.set(token);
+					stream.next();
 				}
 			}
 		}
