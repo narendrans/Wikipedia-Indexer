@@ -22,7 +22,7 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
 public class WhitespaceRuleTest extends TokenizerRuleTest {
 
 	public WhitespaceRuleTest(Properties props) {
-		super(props);
+		super(props, IndexerConstants.WHITESPACERULE);
 	}
 	
 	@Test

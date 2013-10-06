@@ -23,7 +23,6 @@ public class WhiteSpaceRule implements TokenizerRule {
 
 	@Override
 	public void apply(TokenStream stream) throws TokenizerException {
-		System.out.println("inside whitespace rule");
 		if (stream != null) {
 			String[] token;
 			String actual = "";

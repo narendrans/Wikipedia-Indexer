@@ -136,7 +136,10 @@ public class WikipediaParser {
 	 *         element is the link url
 	 */
 	private static String capitalize(String line) {
-		return Character.toUpperCase(line.charAt(0)) + line.substring(1);
+		if (line == null)
+			return "";
+		else
+			return Character.toUpperCase(line.charAt(0)) + line.substring(1);
 	}
 
 	public static String[] parseLinks(String text) {
@@ -187,8 +190,10 @@ public class WikipediaParser {
 		// [[kingdom (biology)|]]
 		else if (text.matches("\\[\\[.+\\|\\]\\]")) {
 			text = text.replaceAll("\\[\\[|\\]\\]|\\|", "");
+
 			String temp = text.replaceAll(" ", "_");
-			parsedLink = temp.split("_");
+			if (temp.contains("_"))
+				parsedLink = temp.split("_");
 			parsedLink[1] = capitalize(temp);
 			parsedLink[0] = parsedLink[0].replace(",", "");
 			return parsedLink;
@@ -277,6 +282,14 @@ public class WikipediaParser {
 			parsedLink[1] = capitalize(matcher.group(2).replaceAll(" ", "_"));
 			return parsedLink;
 
+		} else if (text.matches("\\[\\[.+\\|\\]\\]")) {
+			text = text.replaceAll("\\[\\[|\\]\\]|\\|", "");
+
+			parsedLink[0] = text;
+		} else if (text.matches("\\[\\[.+\\]\\]")) {
+			text = text.replaceAll("\\[\\[|\\]\\]", "");
+
+			parsedLink[0] = text;
 		}
 		return parsedLink;
 	}

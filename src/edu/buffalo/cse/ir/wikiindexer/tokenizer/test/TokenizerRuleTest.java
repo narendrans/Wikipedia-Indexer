@@ -32,7 +32,7 @@ public class TokenizerRuleTest extends PropertiesBasedTest {
 	
 	private static Set<String> preTknRuleSet;
 	
-	public TokenizerRuleTest(Properties props) {
+	public TokenizerRuleTest(Properties props, String constantName) {
 		super(props);
 		
 		if (preTknRuleSet == null) {
@@ -43,8 +43,7 @@ public class TokenizerRuleTest extends PropertiesBasedTest {
 			}
 		}
 		
-		//String className = idxProps.getProperty(constantName);
-		String className = "edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.WhiteSpaceRule";
+		String className = idxProps.getProperty(constantName);
 		if (className != null) {
 			try {
 				Class cls = Class.forName(className);

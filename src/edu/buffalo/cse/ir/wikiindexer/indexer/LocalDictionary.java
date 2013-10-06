@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
+import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
+
 /**
  * @author nikhillo This class represents a subclass of a Dictionary class that
  *         is local to a single thread. All methods in this class are assumed
@@ -16,8 +18,9 @@ import java.util.Random;
 public class LocalDictionary extends Dictionary {
 	Map<String, Integer> myMap;
 
-	Properties props;
-	INDEXFIELD fld;
+	static Properties props;
+	static INDEXFIELD fld;
+	WikipediaDocument document;
 
 	/**
 	 * Public default constructor
@@ -36,6 +39,11 @@ public class LocalDictionary extends Dictionary {
 
 	}
 
+	public LocalDictionary(WikipediaDocument d) {
+		super(props, fld);
+		this.document = d;
+	}
+
 	/**
 	 * Method to lookup and possibly add a mapping for the given value in the
 	 * dictionary. The class should first try and find the given value within
@@ -47,15 +55,20 @@ public class LocalDictionary extends Dictionary {
 	 * @return The id as explained above.
 	 */
 	public int lookup(String value) {
-		if (myMap.containsKey(value))
+		if (myMap.containsKey(value)) {
+			if (value.contains("####")) {
+				titleMap.put(value, titleCount);
+			} else
+				titleCount++;
 			return myMap.get(value);
-		else {
-			Random r = new Random();
-			int rnd = r.nextInt();
-			if(rnd<0)
-				rnd = Math.abs(rnd);
-			myMap.put(value, rnd);
-			return rnd;
+		} else {
+			if (value.contains("####")) {
+				titleMap.put(value, titleCount);
+			} else
+				titleCount++;
+			count = count + 1;
+			myMap.put(value, count);
+			return count;
 		}
 	}
 }

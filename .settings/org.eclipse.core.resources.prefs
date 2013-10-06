@@ -1,4 +1,7 @@
 eclipse.preferences.version=1
 encoding//src/edu/buffalo/cse/ir/MarkupParser.java=UTF-8
+encoding//src/edu/buffalo/cse/ir/wikiindexer/tokenizer/rules/AccentsRule.java=UTF-8
+encoding//src/edu/buffalo/cse/ir/wikiindexer/tokenizer/rules/DatesRule.java=UTF-8
 encoding//src/edu/buffalo/cse/ir/wikiindexer/tokenizer/rules/SpecialCharsRule.java=UTF-8
+encoding//src/edu/buffalo/cse/ir/wikiindexer/tokenizer/test/AccentRuleTest.java=UTF-8
 encoding//src/edu/buffalo/cse/ir/wikiindexer/wikipedia/test/WikipediaParserTest.java=UTF-8

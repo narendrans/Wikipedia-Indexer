@@ -27,12 +27,15 @@ public class IndexWriter implements Writeable {
 	static List<SObject> categoryList = new ArrayList<SObject>();
 	static List<SObject> linkList = new ArrayList<SObject>();
 
-	private final String authorIndex = "/Users/naren/folder/author(compressed).txt";
-	private final String termIndex = "/Users/naren/folder/term(compressed).txt";
-	private final String categoryIndex = "/Users/naren/folder/category(compressed).txt";
-	private final String linkIndex = "/Users/naren/folder/link(compressed).txt";
+	private static Object sharedLock = new Object();
+	private String authorIndexFile = "Author_Index.dat";
+	private String termIndexFile = "Term_Index.dat";
+	private String categoryIndexFile = "Category_Index.dat";
+	private String linkIndexFile = "Link_Index.dat";
 
 	private INDEXFIELD field;
+
+	private String tempDir;
 
 	/**
 	 * Constructor that assumes the underlying index is inverted Every index
@@ -49,10 +52,17 @@ public class IndexWriter implements Writeable {
 	 * @param valueField
 	 *            : The index field that is the value for this index
 	 */
+
 	public IndexWriter(Properties props, INDEXFIELD keyField,
 			INDEXFIELD valueField) {
 		this.field = keyField;
-		System.out.println(keyField);
+
+		this.tempDir = props.getProperty("tmp.dir");
+
+		this.authorIndexFile = this.tempDir + this.authorIndexFile;
+		this.categoryIndexFile = this.tempDir + this.categoryIndexFile;
+		this.termIndexFile = this.tempDir + this.termIndexFile;
+		this.linkIndexFile = this.tempDir + this.linkIndexFile;
 	}
 
 	/**
@@ -75,8 +85,14 @@ public class IndexWriter implements Writeable {
 	 */
 	public IndexWriter(Properties props, INDEXFIELD keyField,
 			INDEXFIELD valueField, boolean isForward) {
-System.out.println(keyField);
 		this.field = keyField;
+
+		this.tempDir = props.getProperty("tmp.dir");
+
+		this.authorIndexFile = this.tempDir + this.authorIndexFile;
+		this.categoryIndexFile = this.tempDir + this.categoryIndexFile;
+		this.termIndexFile = this.tempDir + this.termIndexFile;
+		this.linkIndexFile = this.tempDir + this.linkIndexFile;
 	}
 
 	/**
@@ -105,9 +121,35 @@ System.out.println(keyField);
 	 */
 	public void addToIndex(int keyId, int valueId, int numOccurances)
 			throws IndexerException {
-		System.out.println("inside add to index 1");
+		synchronized (sharedLock) {
+			switch (this.field) {
+			case TERM: {
+				SObject obj = new SObject(String.valueOf(keyId), valueId,
+						numOccurances);
 
-		// TODO: Implement this method
+				termList.add(obj);
+				break;
+			}
+			case AUTHOR: {
+				SObject obj = new SObject(String.valueOf(keyId), valueId,
+						numOccurances);
+				authorList.add(obj);
+				System.out.println(keyId+" " + valueId+" " + numOccurances);
+				break;
+			}
+			case CATEGORY: {
+				SObject obj = new SObject(String.valueOf(keyId), valueId,
+						numOccurances);
+				categoryList.add(obj);
+				break;
+			}
+			case LINK:
+				SObject obj = new SObject(String.valueOf(keyId), valueId,
+						numOccurances);
+				linkList.add(obj);
+				break;
+			}
+		}
 	}
 
 	/**
@@ -125,7 +167,35 @@ System.out.println(keyField);
 	 */
 	public void addToIndex(int keyId, String value, int numOccurances)
 			throws IndexerException {
-		System.out.println("inside add to index 2");
+		synchronized (sharedLock) {
+			switch (this.field) {
+			case TERM: {
+				SObject obj = new SObject(String.valueOf(keyId),
+						Integer.parseInt(value), numOccurances);
+
+				termList.add(obj);
+				break;
+			}
+			case AUTHOR: {
+				SObject obj = new SObject(String.valueOf(keyId),
+						Integer.parseInt(value), numOccurances);
+				System.out.println(keyId+" " + value+" " + numOccurances);
+				authorList.add(obj);
+				break;
+			}
+			case CATEGORY: {
+				SObject obj = new SObject(String.valueOf(keyId),
+						Integer.parseInt(value), numOccurances);
+				categoryList.add(obj);
+				break;
+			}
+			case LINK:
+				SObject obj = new SObject(String.valueOf(keyId),
+						Integer.parseInt(value), numOccurances);
+				linkList.add(obj);
+				break;
+			}
+		}
 	}
 
 	/**
@@ -138,42 +208,37 @@ System.out.println(keyField);
 	 * @param numOccurances
 	 *            : Number of times the value field is referenced by the key
 	 *            field. Ignore if a forward index
+	 * @return
 	 * @throws IndexerException
 	 *             : If any exception occurs while indexing
 	 */
-	public void addToIndex(String key, int valueId, int numOccurances)
-			throws IndexerException {
-		switch (this.field) {
-		case TERM: {
-			SObject obj = new SObject();
-			obj.setKeyId(key);
-			obj.setOccurences(numOccurances);
-			obj.setValue(valueId);
 
-			termList.add(obj);
-			break;
-		}
-		case AUTHOR: {
-			SObject obj = new SObject();
-			obj.setKeyId(key);
-			obj.setOccurences(numOccurances);
-			obj.setValue(valueId);
+	public synchronized void addToIndex(String key, int valueId,
+			int numOccurances) throws IndexerException {
+		synchronized (sharedLock) {
+			switch (this.field) {
+			case TERM: {
+				SObject obj = new SObject(key, valueId, numOccurances);
 
-			authorList.add(obj);
-			break;
-		}
-		case CATEGORY: {
-			SObject obj = new SObject();
-			obj.setKeyId(key);
-			obj.setOccurences(numOccurances);
-			obj.setValue(valueId);
-
-			categoryList.add(obj);
-			break;
-		}
-		case LINK:
-			// System.out.println("case link");
-			break;
+				termList.add(obj);
+				break;
+			}
+			case AUTHOR: {
+				SObject obj = new SObject(key, valueId, numOccurances);
+				
+				authorList.add(obj);
+				break;
+			}
+			case CATEGORY: {
+				SObject obj = new SObject(key, valueId, numOccurances);
+				categoryList.add(obj);
+				break;
+			}
+			case LINK:
+				SObject obj = new SObject(key, valueId, numOccurances);
+				linkList.add(obj);
+				break;
+			}
 		}
 
 	}
@@ -193,7 +258,34 @@ System.out.println(keyField);
 	 */
 	public void addToIndex(String key, String value, int numOccurances)
 			throws IndexerException {
-		System.out.println("inside add to index3");
+		synchronized (sharedLock) {
+			switch (this.field) {
+			case TERM: {
+				SObject obj = new SObject(key, Integer.parseInt(value),
+						numOccurances);
+
+				termList.add(obj);
+				break;
+			}
+			case AUTHOR: {
+				SObject obj = new SObject(key, Integer.parseInt(value),
+						numOccurances);
+				authorList.add(obj);
+				break;
+			}
+			case CATEGORY: {
+				SObject obj = new SObject(key, Integer.parseInt(value),
+						numOccurances);
+				categoryList.add(obj);
+				break;
+			}
+			case LINK:
+				SObject obj = new SObject(key, Integer.parseInt(value),
+						numOccurances);
+				linkList.add(obj);
+				break;
+			}
+		}
 	}
 
 	/*
@@ -202,30 +294,35 @@ System.out.println(keyField);
 	 * @see edu.buffalo.cse.ir.wikiindexer.indexer.Writeable#writeToDisk()
 	 */
 	public void writeToDisk() throws IndexerException {
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream(
-					new DeflaterOutputStream(new FileOutputStream(authorIndex)));
-			oos.writeObject(authorList);
-			oos.close();
+		synchronized (sharedLock) {
+			try {
+				ObjectOutputStream oos = new ObjectOutputStream(
+						new DeflaterOutputStream(new FileOutputStream(
+								authorIndexFile)));
+				oos.writeObject(authorList);
+				oos.close();
 
-			ObjectOutputStream oos1 = new ObjectOutputStream(
-					new DeflaterOutputStream(new FileOutputStream(termIndex)));
-			oos1.writeObject(termList);
-			oos1.close();
+				ObjectOutputStream oos1 = new ObjectOutputStream(
+						new DeflaterOutputStream(new FileOutputStream(
+								termIndexFile)));
+				oos1.writeObject(termList);
+				oos1.close();
 
-			ObjectOutputStream oos2 = new ObjectOutputStream(
-					new DeflaterOutputStream(
-							new FileOutputStream(categoryIndex)));
-			oos2.writeObject(categoryList);
-			oos2.close();
+				ObjectOutputStream oos2 = new ObjectOutputStream(
+						new DeflaterOutputStream(new FileOutputStream(
+								categoryIndexFile)));
+				oos2.writeObject(categoryList);
+				oos2.close();
 
-			ObjectOutputStream oos3 = new ObjectOutputStream(
-					new DeflaterOutputStream(new FileOutputStream(linkIndex)));
-			oos3.writeObject(linkList);
-			oos3.close();
+				ObjectOutputStream oos3 = new ObjectOutputStream(
+						new DeflaterOutputStream(new FileOutputStream(
+								linkIndexFile)));
+				oos3.writeObject(linkList);
+				oos3.close();
 
-		} catch (Exception e) {
-			e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

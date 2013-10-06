@@ -36,7 +36,7 @@ public class AccentsRule implements TokenizerRule {
 		text = accentCheck(text, "(â|Ã¢)", "a");
 		text = accentCheck(text, "(ô|Ã´)", "o");
 		text = accentCheck(text, "(é|Ã©)", "e");
-		text = accentCheck(text, "(а̀)", "a");
+		text = accentCheck(text, "(а̀|а̀)", "a");
 		text = accentCheck(text, "(à|(Ã ))", "a");
 		text = accentCheck(text, "(è|Ã¨)", "e");
 		text = accentCheck(text, "(é|Ã©)", "e");
@@ -60,9 +60,11 @@ public class AccentsRule implements TokenizerRule {
 			String token;
 			while (stream.hasNext()) {
 				token = stream.next();
+				stream.previous();
 				if (token != null) {
 					token = replaceAccent(token);
 					stream.set(token.split(" "));
+					stream.next();
 				}
 			}
 		}

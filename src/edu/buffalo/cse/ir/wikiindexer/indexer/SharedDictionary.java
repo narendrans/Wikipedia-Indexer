@@ -4,8 +4,11 @@
 package edu.buffalo.cse.ir.wikiindexer.indexer;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+
+import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
 
 /**
  * @author nikhillo This class represents a subclass of a Dictionary class that
@@ -13,6 +16,10 @@ import java.util.Random;
  *         synchronized for the same reason.
  */
 public class SharedDictionary extends Dictionary {
+
+	private WikipediaDocument document;
+	private static Properties p;
+	private static INDEXFIELD f;
 
 	/**
 	 * Public default constructor
@@ -25,9 +32,21 @@ public class SharedDictionary extends Dictionary {
 	public SharedDictionary(Properties props, INDEXFIELD field) {
 		super(props, field);
 		this.props = props;
+
 		this.fld = field;
+
+		this.p = props;
+		this.f = field;
 		myMap = new HashMap<String, Integer>();
 		super.setMyMap(myMap);
+
+		titleMap = new HashMap<String, Integer>();
+	}
+
+	public SharedDictionary(WikipediaDocument doc) {
+		super(p, f);
+		this.document = doc;
+
 	}
 
 	/**
@@ -42,16 +61,24 @@ public class SharedDictionary extends Dictionary {
 	 */
 	public synchronized int lookup(String value) {
 
-		if (myMap.containsKey(value))
+		if (myMap.containsKey(value)) {
+			if (value.contains("####")) {
+				titleMap.put(value, titleCount);
+			} else
+				titleCount++;
 			return myMap.get(value);
-		else {
-			Random r = new Random();
-			int rnd = r.nextInt();
-			if (rnd < 0)
-				rnd = Math.abs(rnd);
-			myMap.put(value, rnd);
-			return rnd;
+
+		} else {
+			if (value.contains("####")) {
+				titleMap.put(value, titleCount);
+			} else
+				titleCount++;
+			count = count + 1;
+			myMap.put(value, count);
+
+			return count;
 		}
+
 	}
 
 }

@@ -3,14 +3,12 @@
  */
 package edu.buffalo.cse.ir.wikiindexer.wikipedia;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import edu.buffalo.cse.ir.wikiindexer.indexer.INDEXFIELD;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.Tokenizer;
-import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument.Section;
 
 /**
  * A simple map based token view of the transformed document
@@ -24,8 +22,10 @@ public class IndexableDocument {
 	 */
 	DocumentTransformer docTrans;
 	Map<INDEXFIELD, Tokenizer> tknizerMap;
+	Map<INDEXFIELD, TokenStream> tmap;
 
 	public IndexableDocument(DocumentTransformer dt) {
+		tmap = new HashMap<INDEXFIELD,TokenStream>();
 		this.docTrans = dt;
 	}
 
@@ -39,7 +39,17 @@ public class IndexableDocument {
 	 *            : The stream to be added.
 	 */
 	public void addField(INDEXFIELD field, TokenStream stream) {
-		// TODO: Implement this method
+		if (tmap.containsKey(field)) {
+			TokenStream s = tmap.get(field);
+			if (s != null)
+				s.merge(stream);
+			else
+				s = stream;
+		} else {
+			if (stream != null)
+				tmap.put(field, stream);
+		}
+
 	}
 
 	/**
@@ -50,41 +60,8 @@ public class IndexableDocument {
 	 * @return The underlying stream if the key exists, null otherwise
 	 */
 	public TokenStream getStream(INDEXFIELD key) {
-		tknizerMap = docTrans.getTokenMap();
-
-		switch (key) {
-		case AUTHOR: {
-			return new TokenStream(docTrans.getDocument().getAuthor());
-		}
-		case TERM: {
-			List<Section> s = docTrans.getDocument().getSections();
-
-			StringBuilder builder = new StringBuilder();
-			for (Section section : s) {
-				builder.append(section.getTitle() + section.getText());
-			}
-			return new TokenStream(builder.toString());
-		}
-		case CATEGORY: {
-			List<String> cat = docTrans.getDocument().getCategories();
-
-			StringBuilder builder = new StringBuilder();
-			for (String string : cat) {
-				builder.append(string + " ");
-			}
-			return new TokenStream(builder.toString());
-		}
-		case LINK: {
-			Set<String> links = docTrans.getDocument().getLinks();
-			StringBuilder builder = new StringBuilder();
-			for (String string : links) {
-				builder.append(string + " ");
-			}
-			return new TokenStream(builder.toString());
-		}
-
-		}
-		return null;
+	
+			return tmap.get(key);
 	}
 
 	/**
@@ -95,7 +72,7 @@ public class IndexableDocument {
 	 * @return A unique identifier for the given document
 	 */
 	public String getDocumentIdentifier() {
-		return String.valueOf(docTrans.getDocument().getId());
+		return docTrans.getDocument().getTitle()+"####";
 
 	}
 

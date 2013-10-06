@@ -22,6 +22,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import sun.org.mozilla.javascript.internal.ast.ForInLoop;
 import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
 import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaParser;
 
@@ -78,6 +79,10 @@ public class PageHandler extends DefaultHandler {
 
 					// Add all sections in the page
 					List<LocalSection> ls = getSections(pageText);
+					List<String> linkList = getLinks(pageText);
+
+					doc.addLinksP(linkList);
+
 					for (LocalSection localSection : ls) {
 						doc.addSectionP(localSection.getTitle(),
 								localSection.getText());
@@ -92,6 +97,25 @@ public class PageHandler extends DefaultHandler {
 
 			return docs;
 		}
+	}
+
+	public List<String> getLinks(String input) {
+
+		List<String> myList = new ArrayList<String>();
+
+		Pattern pattern = Pattern.compile("\\[\\[.+?\\]\\]");
+		Matcher matcher = pattern.matcher(input);
+		while (matcher.find()) {
+			myList.add(matcher.group());
+		}
+
+		for (int i = 0; i < myList.size(); i++) {
+			myList.set(i, WikipediaParser.parseLinks(myList.get(i))[0]
+					.replaceAll("[^\\w\\s]+", ""));
+		}
+
+		// System.out.println(myList.get(10));
+		return myList;
 	}
 
 	public List<LocalSection> getSections(String input) {
@@ -110,7 +134,7 @@ public class PageHandler extends DefaultHandler {
 
 		for (int i = 0; i < titles.size(); i++) {
 
-			LocalSection ls = new LocalSection(titles.get(i), sections[i]);
+			LocalSection ls = new LocalSection(titles.get(i), sections[i].replaceAll("[^\\w\\s]+", " "));
 			lsList.add(ls);
 		}
 

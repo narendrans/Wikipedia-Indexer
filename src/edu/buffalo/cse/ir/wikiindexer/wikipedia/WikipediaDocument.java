@@ -119,6 +119,10 @@ public class WikipediaDocument {
 	protected void addLInks(Collection<String> links) {
 		this.links.addAll(links);
 	}
+	
+	public void addLinksP(Collection<String> link){
+		this.links.addAll(link);
+	}
 
 	/**
 	 * Method to add a category to the list of categories that classify this

@@ -241,14 +241,7 @@ public class TokenStream implements Iterator<String> {
 	public void remove() {
 		if (stream == null || position == stream.size())
 			return;
-		if (stream != null) {
-			if (remove)
-				stream.remove(position - 1);
-			else
-				stream.remove(position);
-		}
-
-		this.remove = false;
+		stream.remove(position);
 	}
 
 	/**
@@ -309,7 +302,7 @@ public class TokenStream implements Iterator<String> {
 	 */
 	public void set(String... newValue) {
 		if (stream == null || newValue == null || newValue[0] == null
-				|| newValue[0].equals("") || stream.size() == 0 || !hasNext()) {
+				|| newValue[0].equals("") || stream.size() == 0 ) {
 			return;
 		} else {
 			int temppos = position;
@@ -338,7 +331,6 @@ public class TokenStream implements Iterator<String> {
 			}
 			// position = stream.indexOf(newValue[newValue.length]);
 			position = temppos - 1;
-			this.remove = true;
 		}
 		// System.out.println("Inside token stream (Size): "+this.getAllTokens().size());
 	}

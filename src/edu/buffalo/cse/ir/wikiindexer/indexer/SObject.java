@@ -12,6 +12,13 @@ public class SObject implements Serializable {
 	private String keyId;
 	private int occurences;
 
+	public SObject(String a, int b, int c) {
+
+		this.keyId = a;
+		this.value = b;
+		this.occurences = c;
+	}
+
 	public int getValue() {
 		return value;
 	}
