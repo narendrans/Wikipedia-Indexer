@@ -428,7 +428,22 @@ public class IndexReader {
 							.getAdd());
 				}
 			}
-			return sortByValue(myMap);
+			Map<String, Integer> newMap = new HashMap<String, Integer>();
+			for (int i = 0; i < titleTermList.size(); i++) {
+				for (Map.Entry<String, Integer> entry : myMap.entrySet()) {
+
+					int temp1 = Integer.parseInt(entry.getKey());
+
+					int lowerBound = titleTermList.get(i).getLowerBound();
+					int upperBound = titleTermList.get(i).getUpperBound();
+
+					if (temp1 > lowerBound && temp1 < upperBound)
+						newMap.put(
+								titleTermList.get(i).getTitle()
+										.replaceAll("#", ""), entry.getValue());
+				}
+			}
+			return sortByValue(newMap);
 		}
 		case TERM: {
 			for (SObject obj : termList) {
@@ -463,28 +478,28 @@ public class IndexReader {
 							.getAdd());
 				}
 			}
-			
-			
-				
-				System.out.println(myMap);
-				for (TitleTerm t : titleTermList) {
-					System.out.println(t.getTitle() + " " +t.getLowerBound() + " "+ t.getUpperBound());
-				}
-			Map<String,Integer> newMap = new HashMap<String,Integer>();
-			for(int i=0;i<titleTermList.size();i++){
-				for (Map.Entry<String, Integer> entry : myMap
-						.entrySet()) {
-					
+
+			// System.out.println(myMap);
+			// for (TitleTerm t : titleTermList) {
+			// System.out.println(t.getTitle() + " " +t.getLowerBound() + " "+
+			// t.getUpperBound());
+			// }
+			Map<String, Integer> newMap = new HashMap<String, Integer>();
+			for (int i = 0; i < titleTermList.size(); i++) {
+				for (Map.Entry<String, Integer> entry : myMap.entrySet()) {
+
 					int temp1 = Integer.parseInt(entry.getKey());
-					
+
 					int lowerBound = titleTermList.get(i).getLowerBound();
 					int upperBound = titleTermList.get(i).getUpperBound();
-					
-					if(temp1>lowerBound && temp1<upperBound)
-						newMap.put(titleTermList.get(i).getTitle().replaceAll("#", ""), entry.getValue());
+
+					if (temp1 > lowerBound && temp1 < upperBound)
+						newMap.put(
+								titleTermList.get(i).getTitle()
+										.replaceAll("#", ""), entry.getValue());
 				}
 			}
-			return sortByValue(myMap);
+			return sortByValue(newMap);
 		}
 		case CATEGORY: {
 			for (SObject obj : categoryList) {
@@ -519,7 +534,22 @@ public class IndexReader {
 							.getAdd());
 				}
 			}
-			return sortByValue(myMap);
+			Map<String, Integer> newMap = new HashMap<String, Integer>();
+			for (int i = 0; i < titleTermList.size(); i++) {
+				for (Map.Entry<String, Integer> entry : myMap.entrySet()) {
+
+					int temp1 = Integer.parseInt(entry.getKey());
+
+					int lowerBound = titleTermList.get(i).getLowerBound();
+					int upperBound = titleTermList.get(i).getUpperBound();
+
+					if (temp1 > lowerBound && temp1 < upperBound)
+						newMap.put(
+								titleTermList.get(i).getTitle()
+										.replaceAll("#", ""), entry.getValue());
+				}
+			}
+			return sortByValue(newMap);
 		}
 		case LINK: {
 			for (SObject obj : linkList) {
@@ -554,7 +584,22 @@ public class IndexReader {
 							.getAdd());
 				}
 			}
-			return sortByValue(myMap);
+			Map<String, Integer> newMap = new HashMap<String, Integer>();
+			for (int i = 0; i < titleTermList.size(); i++) {
+				for (Map.Entry<String, Integer> entry : myMap.entrySet()) {
+
+					int temp1 = Integer.parseInt(entry.getKey());
+
+					int lowerBound = titleTermList.get(i).getLowerBound();
+					int upperBound = titleTermList.get(i).getUpperBound();
+
+					if (temp1 > lowerBound && temp1 < upperBound)
+						newMap.put(
+								titleTermList.get(i).getTitle()
+										.replaceAll("#", ""), entry.getValue());
+				}
+			}
+			return sortByValue(newMap);
 		}
 		default:
 			return null;

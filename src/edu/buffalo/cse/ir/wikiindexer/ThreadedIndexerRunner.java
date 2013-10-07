@@ -38,7 +38,6 @@ public class ThreadedIndexerRunner {
 		int numOccur, numPart;
 		TermIndexEntry tidx;
 		RunnerThread currThread;
-System.out.println();
 		for (Entry<String, Integer> etr : tokenmap.entrySet()) {
 			term = etr.getKey();
 			numOccur = etr.getValue();

@@ -6,8 +6,11 @@ package edu.buffalo.cse.ir.wikiindexer.tokenizer;
 import java.util.Properties;
 
 import edu.buffalo.cse.ir.wikiindexer.indexer.INDEXFIELD;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.AccentsRule;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.CapitalizationRule;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.DatesRule;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.EnglishStemmer;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.HyphenRule;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.NumbersRule;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.PunctuationRule;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.SpecialCharsRule;
@@ -68,13 +71,18 @@ public class TokenizerFactory {
 		 */
 		try {
 			if (field == INDEXFIELD.TERM)
-				return new Tokenizer(new WhiteSpaceRule(), new StopWordsRule(),new CapitalizationRule(), new NumbersRule());
+				return new Tokenizer(new WhiteSpaceRule(),
+						new SpecialCharsRule(), new DatesRule(),
+						new NumbersRule(), new EnglishStemmer(),
+						new AccentsRule(), new CapitalizationRule(),
+						new StopWordsRule());
 			if (field == INDEXFIELD.CATEGORY)
 				return new Tokenizer(new WhiteSpaceRule());
 			if (field == INDEXFIELD.AUTHOR)
 				return new Tokenizer();
 			if (field == INDEXFIELD.LINK)
-				return new Tokenizer(new WhiteSpaceRule(), new SpecialCharsRule());
+				return new Tokenizer(new WhiteSpaceRule(),
+						new SpecialCharsRule());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

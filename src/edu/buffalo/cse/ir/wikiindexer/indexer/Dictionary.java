@@ -84,10 +84,6 @@ public abstract class Dictionary implements Writeable {
 			e.printStackTrace();
 		}
 
-		for (Map.Entry<String, Integer> entry : titleMap.entrySet()) {
-			System.out.println(entry.getKey() + "/" + entry.getValue());
-		}
-
 		System.out.println("inside dictionary write method");
 
 	}

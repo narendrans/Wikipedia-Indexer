@@ -291,6 +291,18 @@ public class WikipediaParser {
 
 			parsedLink[0] = text;
 		}
+		// London has [[public transport]]
+		// London has public transport", "Public_transport"
+		else if (text.matches(".+\\[\\[.+\\]\\]")) {
+			parsedLink[0] = text.replaceAll("\\[\\[|\\]\\]", "");
+			text = text.replaceAll(" ", "_");
+			String[] x = text.split("\\[\\[");
+
+			text = x[1].replaceAll("\\]\\]", "");
+
+			parsedLink[1] = capitalize(text);
+
+		}
 		return parsedLink;
 	}
 }
