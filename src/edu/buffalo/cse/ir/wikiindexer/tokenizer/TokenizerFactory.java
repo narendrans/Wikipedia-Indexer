@@ -71,11 +71,8 @@ public class TokenizerFactory {
 		 */
 		try {
 			if (field == INDEXFIELD.TERM)
-				return new Tokenizer(new WhiteSpaceRule(),
-						new SpecialCharsRule(), new DatesRule(),
-						new NumbersRule(), new EnglishStemmer(),
-						new AccentsRule(), new CapitalizationRule(),
-						new StopWordsRule());
+				return new Tokenizer(new WhiteSpaceRule(), new NumbersRule(),
+						new AccentsRule(), new StopWordsRule());
 			if (field == INDEXFIELD.CATEGORY)
 				return new Tokenizer(new WhiteSpaceRule());
 			if (field == INDEXFIELD.AUTHOR)

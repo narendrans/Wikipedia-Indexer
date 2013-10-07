@@ -69,13 +69,13 @@ public abstract class Dictionary implements Writeable {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(
 					new DeflaterOutputStream(new FileOutputStream(props
-							.getProperty("tmp.dir") + "Dictionary.dat")));
+							.getProperty("root.dir") + "Dictionary.dat")));
 			oos.writeObject(myMap);
 			oos.close();
 			
 			ObjectOutputStream oos1 = new ObjectOutputStream(
 					new DeflaterOutputStream(new FileOutputStream(props
-							.getProperty("tmp.dir") + "Title_Term_Index.dat")));
+							.getProperty("root.dir") + "Title_Term_Index.dat")));
 			oos1.writeObject(titleMap);
 			oos1.close();
 			

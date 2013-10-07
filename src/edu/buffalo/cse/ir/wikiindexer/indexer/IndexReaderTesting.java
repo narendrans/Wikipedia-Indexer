@@ -19,6 +19,6 @@ public class IndexReaderTesting {
 		}
 		IndexReader r = new IndexReader(pr, INDEXFIELD.TERM);
 
-		System.out.println(r.query("english","british"));
+		System.out.println(r.query("einstein"));
 	}
 }

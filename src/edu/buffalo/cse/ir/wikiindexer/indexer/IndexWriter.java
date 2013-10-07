@@ -57,7 +57,7 @@ public class IndexWriter implements Writeable {
 			INDEXFIELD valueField) {
 		this.field = keyField;
 
-		this.tempDir = props.getProperty("tmp.dir");
+		this.tempDir = props.getProperty("root.dir");
 
 		this.authorIndexFile = this.tempDir + this.authorIndexFile;
 		this.categoryIndexFile = this.tempDir + this.categoryIndexFile;

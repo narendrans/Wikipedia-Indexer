@@ -50,10 +50,9 @@ public class Parser {
 				PageHandler pageHandler = new PageHandler();
 
 				docs.addAll(pageHandler.fetchDocuments(filename));
-				
 
-				System.out.println("DEBUG: No of entries in xml: "
-						+ docs.size());
+				// System.out.println("DEBUG: No of entries in xml: "
+				// + docs.size());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -71,8 +70,7 @@ public class Parser {
 	 * @param documents
 	 *            : The collection of WikipediaDocuments to be added to
 	 */
-	private synchronized void add(
-			Collection<WikipediaDocument> documents) {
-		docs.addAll(documents); 
+	private synchronized void add(Collection<WikipediaDocument> documents) {
+		docs.addAll(documents);
 	}
 }

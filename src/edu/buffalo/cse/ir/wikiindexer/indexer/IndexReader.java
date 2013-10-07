@@ -62,7 +62,7 @@ public class IndexReader {
 	@SuppressWarnings("unchecked")
 	public IndexReader(Properties props, INDEXFIELD field) {
 		this.field = field;
-		this.tempDir = props.getProperty("tmp.dir");
+		this.tempDir = props.getProperty("root.dir");
 		try {
 
 			ObjectInputStream dicOos = new ObjectInputStream(

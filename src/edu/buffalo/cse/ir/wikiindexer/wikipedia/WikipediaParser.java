@@ -35,15 +35,17 @@ public class WikipediaParser {
 		// .+ "." is any character -> one or more character
 		// (.+) represents the string "text" inside "== text =="
 
-		if (titleStr.contains(" ")) {
-			Pattern regex = Pattern.compile("=+ (.+) =+");
-			Matcher matcher = regex.matcher(titleStr);
-			matcher.find();
-			return matcher.group(1);
-		} else {
-			return titleStr.replaceAll("=", "");
-		}
-
+		if (titleStr.contains("=")) {
+			if (titleStr.contains(" ")) {
+				Pattern regex = Pattern.compile("=+ (.+) =+");
+				Matcher matcher = regex.matcher(titleStr);
+				matcher.find();
+				return matcher.group(1);
+			} else {
+				return titleStr.replaceAll("=", "");
+			}
+		} else
+			return titleStr;
 	}
 
 	/* TODO */
@@ -60,10 +62,15 @@ public class WikipediaParser {
 			return null;
 		else if (itemText.isEmpty())
 			return "";
-		Pattern regex = Pattern.compile("(?:\\*+|#+|:+) (.+)");
-		Matcher matcher = regex.matcher(itemText);
-		matcher.find();
-		return matcher.group(1);
+
+		if (itemText.contains(":") || itemText.contains("#")
+				|| itemText.contains("*")) {
+			Pattern regex = Pattern.compile("(?:\\*+|#+|:+) (.+)");
+			Matcher matcher = regex.matcher(itemText);
+			matcher.find();
+			return matcher.group(1);
+		} else
+			return itemText;
 	}
 
 	/* TODO */
@@ -80,7 +87,10 @@ public class WikipediaParser {
 			return null;
 		else if (text.isEmpty())
 			return "";
-		return text.replaceAll("'+", "");
+		if (text.contains("'"))
+			return text.replaceAll("'+", "");
+		else
+			return text;
 
 	}
 
@@ -98,12 +108,16 @@ public class WikipediaParser {
 			return null;
 		else if (text.isEmpty())
 			return "";
-		text = text.replaceAll("<[^>]*>", "");
-		text = text.replaceAll("&lt;([^.]*?)&gt;", "");
-		text = text.replace("  ", " ");
 
-		text = text.trim();
-		return text;
+		if (text.contains("<") || text.contains("&lt;")) {
+			text = text.replaceAll("<[^>]*>", "");
+			text = text.replaceAll("&lt;([^.]*?)&gt;", "");
+			text = text.replace("  ", " ");
+
+			text = text.trim();
+			return text;
+		} else
+			return text;
 
 	}
 
@@ -121,7 +135,10 @@ public class WikipediaParser {
 			return null;
 		else if (text.isEmpty())
 			return "";
-		return text.replaceAll("\\{\\{(.+?)\\}\\}", "");
+		if (text.contains("{{"))
+			return text.replaceAll("\\{\\{(.+?)\\}\\}", "");
+		else
+			return text;
 	}
 
 	/* TODO */
