@@ -1,12 +1,12 @@
+/*
+@author: Naren
+*/
 package edu.buffalo.cse.ir.wikiindexer.indexer;
 
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SObject implements Serializable {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7367814686561324032L;
 	private int value;
 	private String keyId;
