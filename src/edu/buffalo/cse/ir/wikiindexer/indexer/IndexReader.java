@@ -24,7 +24,7 @@ import java.util.TreeMap;
 import java.util.zip.InflaterInputStream;
 
 /**
- * @author nikhillo This class is used to introspect a given index The
+ * @author Naren This class is used to introspect a given index The
  *         expectation is the class should be able to read the index and all
  *         associated dictionaries.
  */
